@@ -20,6 +20,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.looksee.audit.visualDesignAudit.models.enums.BrowserType;
 
 import io.github.resilience4j.retry.annotation.Retry;
 

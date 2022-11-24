@@ -22,6 +22,7 @@ import com.looksee.audit.visualDesignAudit.models.ElementState;
 import com.looksee.audit.visualDesignAudit.models.ElementStateIssueMessage;
 import com.looksee.audit.visualDesignAudit.models.ImageElementState;
 import com.looksee.audit.visualDesignAudit.models.PageState;
+import com.looksee.audit.visualDesignAudit.models.PageStateAudits;
 import com.looksee.audit.visualDesignAudit.models.SimpleElement;
 import com.looksee.audit.visualDesignAudit.models.SimplePage;
 import com.looksee.audit.visualDesignAudit.models.UXIssueMessage;

@@ -32,7 +32,14 @@ import com.google.cloud.vision.v1.WebDetection.WebImage;
 import com.google.cloud.vision.v1.WebDetection.WebLabel;
 import com.google.cloud.vision.v1.WebDetection.WebPage;
 import com.google.protobuf.ByteString;
+
 import com.looksee.audit.visualDesignAudit.models.ColorUsageStat;
+import com.looksee.audit.visualDesignAudit.models.ImageFaceAnnotation;
+import com.looksee.audit.visualDesignAudit.models.ImageLandmarkInfo;
+import com.looksee.audit.visualDesignAudit.models.ImageSearchAnnotation;
+import com.looksee.audit.visualDesignAudit.models.Label;
+import com.looksee.audit.visualDesignAudit.models.LatLng;
+import com.looksee.audit.visualDesignAudit.models.Logo;
 import com.looksee.utils.ImageUtils;
 
 /**

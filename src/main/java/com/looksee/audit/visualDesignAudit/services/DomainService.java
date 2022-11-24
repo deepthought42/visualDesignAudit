@@ -14,8 +14,9 @@ import com.looksee.audit.visualDesignAudit.models.DesignSystem;
 import com.looksee.audit.visualDesignAudit.models.Domain;
 import com.looksee.audit.visualDesignAudit.models.DomainAuditRecord;
 import com.looksee.audit.visualDesignAudit.models.Element;
-import com.looksee.audit.visualDesignAudit.models.PageAuditRecord;
+import com.looksee.audit.visualDesignAudit.models.Form;
 import com.looksee.audit.visualDesignAudit.models.PageState;
+import com.looksee.audit.visualDesignAudit.models.TestUser;
 import com.looksee.audit.visualDesignAudit.models.repository.DomainRepository;
 
 @Service
@@ -25,9 +26,6 @@ public class DomainService {
 
 	@Autowired
 	private DomainRepository domain_repo;
-	
-	@Autowired
-	private AuditRecordService audit_record_service;
 	
 
 	public Set<Domain> getDomains() {
@@ -154,13 +152,6 @@ public class DomainService {
 
 	public Domain findByAuditRecord(long audit_record_id) {
 		return domain_repo.findByAuditRecord(audit_record_id);
-	}
-
-	public Optional<PageAuditRecord> getMostRecentPageAuditRecord(String page_url) {
-		assert page_url != null;
-		assert !page_url.isEmpty();
-		
-		return audit_record_service.findMostRecentPageAuditRecord(page_url);
 	}
 
 	public DesignSystem updateExpertiseSettings(long domain_id, String expertise) {

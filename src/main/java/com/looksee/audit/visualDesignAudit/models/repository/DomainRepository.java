@@ -13,7 +13,11 @@ import com.looksee.audit.visualDesignAudit.models.AuditRecord;
 import com.looksee.audit.visualDesignAudit.models.DesignSystem;
 import com.looksee.audit.visualDesignAudit.models.Domain;
 import com.looksee.audit.visualDesignAudit.models.DomainAuditRecord;
+import com.looksee.audit.visualDesignAudit.models.Element;
+import com.looksee.audit.visualDesignAudit.models.Form;
+import com.looksee.audit.visualDesignAudit.models.PageLoadAnimation;
 import com.looksee.audit.visualDesignAudit.models.PageState;
+import com.looksee.audit.visualDesignAudit.models.TestUser;
 
 import io.github.resilience4j.retry.annotation.Retry;
 
@@ -42,14 +46,26 @@ public interface DomainRepository extends Neo4jRepository<Domain, Long> {
 	@Query("MATCH (d:Domain)-[]->(p:PageState) WHERE id(d)=$domain_id RETURN p")
 	public Set<PageState> getPageStates(@Param("domain_id") long domain_id);
 
+	@Query("MATCH (:Account{username:$username})-[:HAS_DOMAIN]-(d:Domain{url:$url}) MATCH (d)-[]->(t:Test) MATCH (t)-[]->(e:ElementState) OPTIONAL MATCH b=(e)-->() RETURN b")
+	public Set<Element> getElementStates(@Param("url") String url, @Param("username") String username);
+	
+	@Query("MATCH (account:Account)-[:HAS_DOMAIN]->(d:Domain{url:$url}) MATCH (d)-[]->(p:Page) MATCH (p)-[]->(ps:PageState) MATCH (ps)-[]->(f:Form) MATCH a=(f)-[:DEFINED_BY]->() MATCH b=(f)-[:HAS]->(e) OPTIONAL MATCH c=(e)-->() WHERE id(account)=$account_id return a,b,c")
+	public Set<Form> getForms(@Param("account_id") long account_id, @Param("url") String url);
+	
 	@Query("MATCH (account:Account)-[:HAS_DOMAIN]->(d:Domain{url:$url}) MATCH (d)-[]->(p:PageState) MATCH (p)-[]->(ps:PageState) MATCH (ps)-[]->(f:Form) WHERE id(account)=$account_id RETURN COUNT(f)")
 	public int getFormCount(@Param("account_id") long account_id, @Param("url") String url);
 
 	@Query("MATCH(account:Account)-[]-(d:Domain{host:$host}) MATCH (d)-[:HAS_TEST]->(t:Test) WHERE id(account)=$account_id  RETURN COUNT(t)")
 	public int getTestCount(@Param("account_id") long account_id, @Param("host") String host);
 
+	@Query("MATCH (d:Domain)-[:HAS_TEST_USER]->(t:TestUser) WHERE id(d)=$domain_id RETURN t")
+	public Set<TestUser> getTestUsers(@Param("domain_id") long domain_id);
+
 	@Query("MATCH (d:Domain)-[r:HAS_TEST_USER]->(t:TestUser{username:$username}) WHERE id(d)=$domain_id AND id(t)=$user_id DELETE r,t return count(t)")
 	public int deleteTestUser(@Param("domain_id") long domain_id, @Param("user_id") long user_id);
+
+	@Query("MATCH (account:Account)-[:HAS_DOMAIN]->(d:Domain{host:$url}) MATCH (d)-[:HAS_TEST]->(:Test) MATCH (t)-[]->(p:PageLoadAnimation) WHERE id(account)=$account_id RETURN p")
+	public Set<PageLoadAnimation> getAnimations(@Param("account_id") long account_id, @Param("url") String url);
 
 	@Query("MATCH (d:Domain) WITH d MATCH (p:PageState) WHERE id(d)=$domain_id AND id(p)=$page_id MERGE (d)-[:HAS]->(p) RETURN p")
 	public PageState addPage(@Param("domain_id") long domain_id, @Param("page_id") long page_id);
@@ -98,6 +114,9 @@ public interface DomainRepository extends Neo4jRepository<Domain, Long> {
 
 	@Query("MATCH (d:Domain) WITH d MATCH (design:DesignSystem) WHERE id(d)=$domain_id AND id(design)=$design_system_id MERGE (d)-[:USES]->(design) RETURN design")
 	public DesignSystem addDesignSystem(@Param("domain_id") long domain_id, @Param("design_system_id") long design_system_id);
+
+	@Query("MATCH (d:Domain)-[]->(user:TestUser) WHERE id(d)=$domain_id RETURN user")
+	public List<TestUser> findTestUsers(@Param("domain_id") long domain_id);
 
 	@Query("MATCH (d:Domain) WITH d MATCH (user:TestUser) WHERE id(d)=$domain_id AND id(user)=$test_user_id MERGE (d)-[:HAS_TEST_USER]->(user) RETURN user")
 	public void addTestUser(@Param("domain_id") long domain_id, @Param("test_user_id") long test_user_id);

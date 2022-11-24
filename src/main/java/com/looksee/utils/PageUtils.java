@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.looksee.audit.visualDesignAudit.models.ElementState;
+import com.looksee.audit.visualDesignAudit.models.Form;
+import com.looksee.audit.visualDesignAudit.models.PageState;
 
 
 public class PageUtils {

@@ -45,15 +45,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.google.cloud.storage.StorageException;
 import com.looksee.audit.visualDesignAudit.gcp.CloudVisionUtils;
+import com.looksee.audit.visualDesignAudit.gcp.GoogleCloudStorage;
 import com.looksee.audit.visualDesignAudit.gcp.ImageSafeSearchAnnotation;
 import com.looksee.audit.visualDesignAudit.models.Browser;
+import com.looksee.audit.visualDesignAudit.models.BrowserConnectionHelper;
 import com.looksee.audit.visualDesignAudit.models.ElementState;
+import com.looksee.audit.visualDesignAudit.models.Form;
 import com.looksee.audit.visualDesignAudit.models.ImageElementState;
 import com.looksee.audit.visualDesignAudit.models.ImageFaceAnnotation;
 import com.looksee.audit.visualDesignAudit.models.ImageLandmarkInfo;
 import com.looksee.audit.visualDesignAudit.models.ImageSearchAnnotation;
+import com.looksee.audit.visualDesignAudit.models.Label;
 import com.looksee.audit.visualDesignAudit.models.Logo;
 import com.looksee.audit.visualDesignAudit.models.PageState;
+import com.looksee.audit.visualDesignAudit.models.Template;
 import com.looksee.audit.visualDesignAudit.models.enums.BrowserEnvironment;
 import com.looksee.audit.visualDesignAudit.models.enums.BrowserType;
 import com.looksee.audit.visualDesignAudit.models.enums.ElementClassification;
@@ -61,7 +66,6 @@ import com.looksee.audit.visualDesignAudit.models.enums.TemplateType;
 import com.looksee.utils.BrowserUtils;
 import com.looksee.utils.ImageUtils;
 
-import aj.org.objectweb.asm.Label;
 import cz.vutbr.web.css.RuleSet;
 import io.github.resilience4j.retry.annotation.Retry;
 import us.codecraft.xsoup.Xsoup;
@@ -73,15 +77,6 @@ import us.codecraft.xsoup.Xsoup;
 @Component
 public class BrowserService {
 	private static Logger log = LoggerFactory.getLogger(BrowserService.class);
-
-	@Autowired
-	private ElementRuleExtractor extractor;
-	
-	@Autowired
-	private ElementService element_service;
-	
-	@Autowired
-	private PageService page_service;
 	
 	private static String[] valid_xpath_attributes = {"class", "id", "name", "title"};
 
@@ -257,42 +252,6 @@ public class BrowserService {
 													safe_search_annotation);
 		
 		return element_state;
-	}
-	
-	
-	/**
- 	 * Constructs an {@link Element} from a JSOUP {@link Element element}
- 	 * 
-	 * @param xpath
-	 * @param attributes
-	 * @param element
-	 * @param classification
-	 * @param rendered_css_values
-	 * 
-	 * @return
-	 * 
-	 * @pre xpath != null && !xpath.isEmpty();
-	 * @pre attributes != null;
-	 * @pre element != null;
-	 * @pre classification != null
-	 * @pre rendered_css_values != null
-	 */
-	public static com.looksee.models.Element buildElement(
-			String xpath, 
-			Map<String, String> attributes, 
-			Element jsoup_element, 
-			ElementClassification classification, 
-			Map<String, String> pre_rendered_css_values
-	) {
-		assert xpath != null && !xpath.isEmpty();
-		assert attributes != null;
-		assert jsoup_element != null;
-		assert classification != null;
-		assert pre_rendered_css_values != null;
-		
-		com.looksee.models.Element element = new com.looksee.models.Element(jsoup_element.ownText(), xpath, jsoup_element.tagName(), attributes, pre_rendered_css_values, jsoup_element.html(), classification, jsoup_element.outerHtml());
-
-		return element;
 	}
 
 	public static String generalizeSrc(String src) {
@@ -1497,204 +1456,13 @@ public class BrowserService {
 
 		return xpath;
 	}
-
-	/**
-	 * Extracts all forms including the child inputs and associated labels.
-	 *
-	 * @param elem
-	 * @param tag
-	 * @param driver
-	 * @return
-	 * @throws Exception
-	 */
-	@Deprecated
-	public Set<Form> extractAllForms(long account_id, Domain domain, Browser browser) throws Exception {
-		Set<Form> form_list = new HashSet<Form>();
-		log.info("extracting forms from page with url    ::     "+browser.getDriver().getCurrentUrl());
-		List<WebElement> form_elements = browser.getDriver().findElements(By.xpath("//form"));
-
-		//String host = domain.getHost();
-		for(WebElement form_elem : form_elements){
-			//BrowserUtils.detectShortAnimation(browser, page.getUrl());
-			if(!form_elem.isDisplayed() || doesElementHaveNegativePosition(form_elem.getLocation())) {
-				continue;
-			}
-			
-			//BufferedImage img = browser.getElementScreenshot(form_elem);
-			//String checksum = PageState.getFileChecksum(img);
-			//Map<String, String> css_map = Browser.loadCssProperties(form_elem);
-			com.looksee.models.Element form_tag = new com.looksee.models.Element(
-					form_elem.getText(), 
-					uniqifyXpath(form_elem, "//form", browser.getDriver()), 
-					form_elem.getTagName(), 
-					browser.extractAttributes(form_elem), 
-					new HashMap<>(), 
-					form_elem.getAttribute("innerHTML"), 
-					ElementClassification.ANCESTOR, 
-					form_elem.getAttribute("outerHTML"));
-			//String screenshot_url = UploadObjectSingleOperation.saveImageToS3ForUser(img, host, checksum, BrowserType.create(browser.getBrowserName()), user_id);
-			//form_tag.setScreenshotUrl(screenshot_url);
-			form_tag = element_service.saveFormElement(form_tag);
-			
-			/*
-			double[] weights = new double[1];
-		
-			Set<Form> forms = domain_service.getForms(account_id, domain.getUrl());
-			Form form = new Form(form_tag, 
-								 new ArrayList<com.looksee.models.Element>(), 
-								 findFormSubmitButton(form_elem, browser),
-								 "Form #"+(forms.size()+1), 
-								 weights, 
-								 FormType.UNKNOWN, 
-								 new Date(), 
-								 FormStatus.DISCOVERED );
-
-			List<WebElement> input_elements =  form_elem.findElements(By.tagName("input"));
-			
-			input_elements = BrowserService.filterNonDisplayedElements(input_elements);
-			form.setFormFields(buildFormFields(account_id, input_elements, browser));
-
-			log.info("weights :: "+ form.getPrediction());
-			form.setType(FormType.UNKNOWN);
-			form.setDateDiscovered(new Date());
-			log.info("form record discovered date :: "+form.getDateDiscovered());
-
-			Form form_record = form_service.findByKey(account_id, domain.getUrl(), form.getKey());
-			if(form_record != null) {
-				continue;
-			}
-
-			int form_count = domain_service.getFormCount(account_id, domain.getUrl());
-			form.setName("Form #"+(form_count+1));
-			log.info("name :: "+form.getName());
-			
-			form_list.add(form);
-			*/
-		}
-		return form_list;
-	}
-	
 	
 
-	private List<com.looksee.models.Element> buildFormFields(long account_id, List<WebElement> input_elements, Browser browser) throws IOException {
-		List<com.looksee.models.Element> elements = new ArrayList<>();
-		for(WebElement input_elem : input_elements){
-			boolean submit_elem_found = false;
-
-			Map<String, String> attributes = browser.extractAttributes(input_elem);
-			for(String attribute : attributes.keySet()){
-				if(attributes.get(attribute).contains("submit")){
-					submit_elem_found = true;
-					break;
-				}
-			}
-
-			if(submit_elem_found){
-				continue;
-			}
-			
-			if(input_elem.getLocation().getX() < 0 || input_elem.getLocation().getY() < 0){
-				log.warn("element location x or y are negative");
-				continue;
-			}
-			
-			com.looksee.models.Element input_tag = new com.looksee.models.Element(input_elem.getText(),
-					generateXpath(input_elem, browser.getDriver(), attributes), 
-					input_elem.getTagName(), 
-					attributes, 
-					new HashMap<>(), 
-					input_elem.getAttribute("innerHTML"), 
-					input_elem.getAttribute("outerHTML"));
-			com.looksee.models.Element tag_record = element_service.findByKeyAndUserId(account_id, input_tag.getKey());
-			if( tag_record != null ) {
-				input_tag = tag_record;
-			}
-			
-			/*
-			if( input_tag.getViewportScreenshotUrl() == null  || input_tag.getViewportScreenshotUrl().isEmpty()) {
-				BufferedImage img = browser.getElementScreenshot(input_elem);
-				String checksum = PageState.getFileChecksum(img);
-				
-				String screenshot = UploadObjectSingleOperation.saveImageToS3ForUser(img, (new URL(browser.getDriver().getCurrentUrl())).getHost(), checksum, BrowserType.create(browser.getBrowserName()), user_id);
-
-				img.flush();
-			}
-			*/
-			input_tag.getRules().addAll(extractor.extractInputRules(input_tag));
-			input_tag = element_service.saveFormElement(input_tag);
-			log.warn("rules applied to input tag   ::   "+input_tag.getRules().size());
-
-			elements.add(input_tag);
-		}
-		
-		return elements;
-	}
-
-	/**
-	 * locates and returns the form submit button
-	 * 
-	 * @param form_elem
-	 * @return
-	 * @throws Exception
-	 * 
-	 * @pre user_id != null
-	 * @pre !user_id.isEmpty()
-	 * @pre form_elem != null
-	 * @pre browser != null;
-	 */
-	@Deprecated
-	private com.looksee.models.Element findFormSubmitButton(WebElement form_elem, 
-															Browser browser
-	) throws Exception {
-		assert form_elem != null;
-		assert browser != null;
-		
-		WebElement submit_element = null;
-
-		boolean submit_elem_found = false;
-		List<WebElement> form_elements = getNestedElements(form_elem);
-
-		Map<String, String> attributes = new HashMap<>();
-		for(WebElement elem : form_elements){
-			attributes = browser.extractAttributes(elem);
-			for(String attribute : attributes.keySet()){
-				if(attributes.get(attribute).contains("submit")){
-					submit_elem_found = true;
-					break;
-				}
-			}
-
-			if(submit_elem_found){
-				submit_element = elem;
-				break;
-			}
-		}
-
-		if(submit_element == null){
-			return null;
-		}
-		
-		//Map<String, String> css_map = Browser.loadCssProperties(submit_element);
-		com.looksee.models.Element elem = new com.looksee.models.Element(submit_element.getText(), 
-																		 generateXpath(submit_element, browser.getDriver(), attributes), 
-																		 submit_element.getTagName(), 
-																		 attributes, 
-																		 new HashMap<>(), 
-																		 submit_element.getAttribute("innerHTML"), 
-																		 submit_element.getAttribute("outerHTML"));
-		//String screenshot_url = UploadObjectSingleOperation.saveImageToS3ForUser(img, (new URL(browser.getDriver().getCurrentUrl())).getHost(), checksum, BrowserType.create(browser.getBrowserName()), user_id);
-		//elem.setViewportScreenshotUrl(screenshot_url);
-		elem = element_service.saveFormElement(elem);
-
-		return elem;
-	}
-	
-
-	public Map<String, Template> findTemplates(List<com.looksee.models.Element> element_list){
+	public Map<String, Template> findTemplates(List<com.looksee.audit.visualDesignAudit.models.Element> element_list){
 		//create a map for the various duplicate elements
 		Map<String, Template> element_templates = new HashMap<>();
-		List<com.looksee.models.Element> parents_only_element_list = new ArrayList<>();
-		for(com.looksee.models.Element element : element_list) {
+		List<com.looksee.audit.visualDesignAudit.models.Element> parents_only_element_list = new ArrayList<>();
+		for(com.looksee.audit.visualDesignAudit.models.Element element : element_list) {
 			if(!element.isLeaf()) {
 				parents_only_element_list.add(element);
 			}
@@ -1704,14 +1472,14 @@ public class BrowserService {
 		
 		Map<String, Boolean> identified_templates = new HashMap<String, Boolean>();
 		for(int idx1 = 0; idx1 < parents_only_element_list.size()-1; idx1++){
-			com.looksee.models.Element element1 = parents_only_element_list.get(idx1);
+			com.looksee.audit.visualDesignAudit.models.Element element1 = parents_only_element_list.get(idx1);
 			boolean at_least_one_match = false;
 			if(identified_templates.containsKey(element1.getKey()) ) {
 				continue;
 			}
 			//for each element iterate over all elements in list
 			for(int idx2 = idx1+1; idx2 < parents_only_element_list.size(); idx2++){
-				com.looksee.models.Element element2 = parents_only_element_list.get(idx2);
+				com.looksee.audit.visualDesignAudit.models.Element element2 = parents_only_element_list.get(idx2);
 				if(identified_templates.containsKey(element2.getKey()) || !element1.getName().equals(element2.getName())){
 					continue;
 				}
@@ -2034,115 +1802,6 @@ public class BrowserService {
 		assert sanitized_url != null;
 		
 		return browser.getSource();
-	}
-	
-	public List<com.looksee.models.Element> extractElements(String page_src, URL url, List<RuleSet> rule_sets) throws IOException, XPathExpressionException {
-		return getDomElements(page_src, url, rule_sets);
-	}
-	
-	/**
-	 * 
-	 * @param page_source
-	 * @param url
-	 * @param rule_sets TODO
-	 * @param reviewed_xpaths
-	 * @return
-	 * @throws IOException
-	 * @throws XPathExpressionException 
-	 */
-	private synchronized List<com.looksee.models.Element> getDomElements(String page_source, URL url, List<RuleSet> rule_sets) throws IOException, XPathExpressionException {
-		assert page_source != null;
-		assert !page_source.isEmpty();
-		assert url != null;
-		assert rule_sets != null;
-		
-		List<com.looksee.models.Element> visited_elements = new ArrayList<>();
-		Map<String, String> frontier = new HashMap<>();
-		Map<String, Integer> xpath_cnt = new HashMap<>();
-		
-		//get html doc and get root element
-		Document html_doc = Jsoup.parse(page_source);
-		Element root = html_doc.getElementsByTag("body").get(0);
-			
-		//create element state from root node
-		Map<String, String> attributes = generateAttributesMapUsingJsoup(root);
-		log.warn("page source 1 :: "+page_source.length());
-		log.warn("url 1  :: "+url);
-		Map<String, String> css_props = new HashMap<>();
-		try{
-			css_props.putAll(Browser.loadCssPrerenderedPropertiesUsingParser(rule_sets, root));
-		}
-		catch(Exception e) {
-			log.warn(e.getMessage());
-		}
-		
-		com.looksee.models.Element root_element = buildElement("//body", attributes, root, ElementClassification.ANCESTOR, css_props );
-		root_element = element_service.save(root_element);
-
-		//put element on frontier
-		frontier.put("//body",root_element.getKey());
-		while(!frontier.isEmpty()) {
-			String next_xpath = frontier.keySet().iterator().next();
-			String parent_element_key = frontier.remove(next_xpath);
-			//ElementState root_element = frontier.remove(next_xpath);
-			//visited_elements.add(root_element);
-			//get Element by xpath
-			
-			Elements elements = Xsoup.compile(next_xpath).evaluate(html_doc).getElements();
-			if(elements.size() == 0) {
-				log.warn("NO ELEMENTS WITH XPATH FOUND :: "+next_xpath + "   :     url :   "  + url.toString());
-			}
-			Element element = elements.first();
-			//get child elements for element
-			attributes = generateAttributesMapUsingJsoup(element);
-			
-			Map<String, String> pre_render_css_props = new HashMap<>();
-			
-			try{
-				pre_render_css_props.putAll(Browser.loadCssPrerenderedPropertiesUsingParser(rule_sets, element));
-			}
-			catch(Exception e) {
-				log.warn(e.getMessage());
-			}
-			
-			ElementClassification classification = null;
-			List<Element> children = new ArrayList<Element>(element.children());
-			if(children.isEmpty()) {
-				classification = ElementClassification.LEAF;
-			}
-			else if(isSliderElement(element)) {
-				classification = ElementClassification.SLIDER;
-			}
-			else {
-				classification = ElementClassification.ANCESTOR;
-			}
-			
-			com.looksee.models.Element element_state = buildElement(next_xpath, attributes, element, classification, pre_render_css_props);
-			
-			element_state = element_service.save(element_state);
-			visited_elements.add(element_state);
-			element_service.addChildElement(parent_element_key, element_state.getKey());
-			
-			
-			for(Element child : children) {
-				if(isStructureTag(child.tagName())) {
-					continue;
-				}
-				String xpath = next_xpath + "/" + child.tagName();
-				
-				if(xpath_cnt.containsKey(xpath)) {
-					xpath_cnt.put(xpath, xpath_cnt.get(xpath)+1);
-				}
-				else {
-					xpath_cnt.put(xpath, 1);
-				}
-				
-				xpath = xpath + "["+xpath_cnt.get(xpath)+"]";
-
-				frontier.put(xpath, element_state.getKey());
-			}
-		}
-		return visited_elements;
 	}
 	
 	

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.looksee.audit.visualDesignAudit.models.CIEColorSpace;
 import com.looksee.audit.visualDesignAudit.models.ColorData;
+import com.looksee.audit.visualDesignAudit.models.ColorPaletteIssueMessage;
 import com.looksee.audit.visualDesignAudit.models.PaletteColor;
 import com.looksee.audit.visualDesignAudit.models.Score;
 import com.looksee.audit.visualDesignAudit.models.UXIssueMessage;

@@ -16,6 +16,7 @@ import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 import com.looksee.audit.visualDesignAudit.models.enums.ElementClassification;
 
 
+
 /**
  * Contains all the pertinent information for an element on a page. A ElementState
  *  may be a Parent and/or child of another ElementState. This heirarchy is not
@@ -37,7 +38,7 @@ public class Element extends LookseeObject implements Comparable<Element> {
 	
 	@Property
 	private Map<String, String> pre_render_css_values = new HashMap<>();
-	
+
 	@Relationship(type = "HAS_CHILD", direction = Direction.OUTGOING)
 	private List<Element> child_elements = new ArrayList<>();
 	

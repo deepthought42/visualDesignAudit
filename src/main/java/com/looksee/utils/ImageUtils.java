@@ -22,6 +22,7 @@ import org.openimaj.image.analysis.colour.CIEDE2000;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.looksee.audit.visualDesignAudit.gcp.GoogleCloudStorage;
 import com.looksee.audit.visualDesignAudit.models.ColorData;
 import com.looksee.audit.visualDesignAudit.models.ColorUsageStat;
 import com.looksee.audit.visualDesignAudit.models.ElementState;

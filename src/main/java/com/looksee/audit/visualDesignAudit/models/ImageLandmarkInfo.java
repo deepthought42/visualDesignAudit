@@ -6,8 +6,6 @@ import java.util.UUID;
 
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import com.google.type.LatLng;
-
 
 public class ImageLandmarkInfo extends LookseeObject{
 	

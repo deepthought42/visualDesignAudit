@@ -48,6 +48,7 @@ import com.looksee.audit.visualDesignAudit.models.dto.PageBuiltMessage;
 import com.looksee.audit.visualDesignAudit.models.enums.AuditCategory;
 import com.looksee.audit.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.audit.visualDesignAudit.models.enums.ExecutionStatus;
+import com.looksee.audit.visualDesignAudit.models.message.AuditError;
 import com.looksee.audit.visualDesignAudit.services.AuditRecordService;
 import com.looksee.audit.visualDesignAudit.services.DomainService;
 import com.looksee.audit.visualDesignAudit.services.PageStateService;

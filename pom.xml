@@ -32,6 +32,13 @@
 	        <type>pom</type>
 	        <scope>import</scope>
 	      </dependency>
+	      <dependency>
+	           <groupId>com.google.cloud</groupId>
+	           <artifactId>spring-cloud-gcp-dependencies</artifactId>
+	           <version>3.0.0</version>
+	           <type>pom</type>
+	           <scope>import</scope>
+	       </dependency>
 	    </dependencies>
 	  </dependencyManagement>
 
@@ -125,25 +132,40 @@
 	      	<artifactId>spring-cloud-gcp-pubsub-stream-binder</artifactId>
 			<version>3.2.1</version>
 	    </dependency>
-		
-		
-		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
-		<dependency>
-	    	<groupId>org.seleniumhq.selenium</groupId>
-	        <artifactId>selenium-java</artifactId>
-	        <version>${selenium-version}</version>
-	        <exclusions>
-			    <exclusion>
-			        <groupId>javax.servlet</groupId>
-			        <artifactId>servlet-api</artifactId>
-			    </exclusion>
-			</exclusions>
-	    </dependency>
 	    
-	    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>2.12.2</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>2.12.2</version>
+		</dependency>
+				
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.12.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.datatype</groupId>
 		    <artifactId>jackson-datatype-jsr310</artifactId>
+		    <version>2.12.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8 -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.datatype</groupId>
+		    <artifactId>jackson-datatype-jdk8</artifactId>
+		    <version>2.12.2</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/us.codecraft/xsoup -->
@@ -168,8 +190,90 @@
 	     	<scope>import</scope>
 	    </dependency>
 	    
-		<!-- https://mvnrepository.com/artifact/com.assertthat/selenium-shutterbug -->
+	    <!-- https://mvnrepository.com/artifact/com.google.cloud/spring-cloud-gcp-starter-storage -->
+		<dependency>
+		    <groupId>com.google.cloud</groupId>
+		    <artifactId>spring-cloud-gcp-starter-vision</artifactId>
+		    <version>3.4.0</version>
+		</dependency>
+
+
+				
+		<!-- https://mvnrepository.com/artifact/com.google.cloud/spring-cloud-gcp-starter-storage -->
+		<dependency>
+		    <groupId>com.google.cloud</groupId>
+		    <artifactId>spring-cloud-gcp-starter-storage</artifactId>
+		    <version>3.4.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.cssbox/jstyleparser -->
+		<dependency>
+		    <groupId>net.sf.cssbox</groupId>
+		    <artifactId>jstyleparser</artifactId>
+		    <version>3.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.cssparser/cssparser -->
+		<!--  uncomment this when ready to convert to css parser. JSTYLEPARSER swallows errors and that's not cool -->
+		<dependency>
+		    <groupId>net.sourceforge.cssparser</groupId>
+		    <artifactId>cssparser</artifactId>
+		    <version>0.9.27</version>
+		</dependency>
 		
+		<dependency>
+		    <groupId>xml-apis</groupId>
+		    <artifactId>xml-apis</artifactId>
+		    <version>1.4.01</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.jtidy/jtidy -->
+		<dependency>
+		    <groupId>net.sf.jtidy</groupId>
+		    <artifactId>jtidy</artifactId>
+		    <version>r938</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.8</version>
+        </dependency>
+        
+		<!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-language -->
+		<dependency>
+		    <groupId>com.google.cloud</groupId>
+		    <artifactId>google-cloud-language</artifactId>
+		    <version>2.7.0</version>
+		</dependency>
+
+ 		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+		<dependency>
+	    	<groupId>org.seleniumhq.selenium</groupId>
+	        <artifactId>selenium-java</artifactId>
+	        <version>${selenium-version}</version>
+	        <exclusions>
+			    <exclusion>
+			        <groupId>javax.servlet</groupId>
+			        <artifactId>servlet-api</artifactId>
+			    </exclusion>
+			</exclusions>
+	    </dependency>
+	    
+	    <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-server -->
+		<dependency>
+		    <groupId>org.seleniumhq.selenium</groupId>
+		    <artifactId>selenium-server</artifactId>
+		    <version>${selenium-version}</version>
+		    <exclusions>
+			    <exclusion>
+			        <groupId>javax.servlet</groupId>
+			        <artifactId>servlet-api</artifactId>
+			    </exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.assertthat/selenium-shutterbug -->
 		<dependency>
 		    <groupId>com.assertthat</groupId>
 		    <artifactId>selenium-shutterbug</artifactId>

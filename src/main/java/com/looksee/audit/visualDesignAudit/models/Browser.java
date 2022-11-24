@@ -57,8 +57,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.assertthat.selenium_shutterbug.core.Capture;
@@ -483,7 +481,7 @@ public class Browser {
 	 * @throws IOException
 	 */
 	@Deprecated
-	public BufferedImage getElementScreenshot(com.looksee.models.Element element) throws IOException{
+	public BufferedImage getElementScreenshot(com.looksee.audit.visualDesignAudit.models.Element element) throws IOException{
 		//calculate element position within screen
 		WebElement web_element = driver.findElement(By.xpath(element.getXpath()));
 		return Shutterbug.shootElementVerticallyCentered(driver, web_element).getImage();
@@ -644,7 +642,11 @@ public class Browser {
 	 * @param element the element to for which css styles should be loaded.
 	 * @throws XPathExpressionException 
 	 */
-	public static Map<String, String> loadCssPropertiesUsingParser(org.w3c.dom.Document w3c_document, StyleMap map, URL url, String xpath) throws XPathExpressionException{
+	public static Map<String, String> loadCssPropertiesUsingParser(Document w3c_document, 
+																   StyleMap map, 
+																   URL url, 
+																   String xpath
+    ) throws XPathExpressionException{
 		assert w3c_document != null;
 		assert url != null;
 		assert xpath != null;
@@ -886,7 +888,7 @@ public class Browser {
 		}
     }
 	
-	public void scrollToElement(com.looksee.models.Element element) 
+	public void scrollToElement(com.looksee.audit.visualDesignAudit.models.Element element) 
     { 
 		WebElement elem = driver.findElement(By.xpath(element.getXpath()));
 		((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView({block: \"center\"});", elem);
@@ -1246,14 +1248,5 @@ public class Browser {
 
 	public WebElement findElement(String xpath) throws WebDriverException{
 		return getDriver().findElement(By.xpath(xpath));
-	}
-
-	public void waitForPageToLoadWithRedirects() {
-
-		DocumentSettleCondition<?> settleCondition = new DocumentSettleCondition(
-			ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
-		
-		 WebDriverWait wait = new WebDriverWait(driver, 5);
-		 wait.until(settleCondition);
 	}
 }
