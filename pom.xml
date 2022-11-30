@@ -237,7 +237,7 @@
 		<dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>1.18.20</version>
         </dependency>
         
 		<!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-language -->
@@ -331,18 +331,22 @@
   	</build>
 
     <repositories>
-        <!-- 阿里云代码库 -->
         <repository>
-            <id>maven-ali</id>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
             </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <layout>default</layout>
         </repository>
+        <repository>
+		    <id>atlassian-public</id>
+		    <url>https://packages.atlassian.com/maven/repository/public</url>
+		</repository>
     </repositories>
 </project>
