@@ -39,16 +39,16 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.gcp.GoogleCloudStorage;
-import com.looksee.audit.visualDesignAudit.models.Browser;
-import com.looksee.audit.visualDesignAudit.models.ColorData;
-import com.looksee.audit.visualDesignAudit.models.ElementState;
-import com.looksee.audit.visualDesignAudit.models.ImageElementState;
-import com.looksee.audit.visualDesignAudit.models.PageLoadAnimation;
-import com.looksee.audit.visualDesignAudit.models.PageState;
-import com.looksee.audit.visualDesignAudit.models.enums.BrowserEnvironment;
-import com.looksee.audit.visualDesignAudit.models.enums.BrowserType;
-import com.looksee.audit.visualDesignAudit.services.BrowserService;
+import com.looksee.visualDesignAudit.gcp.GoogleCloudStorage;
+import com.looksee.visualDesignAudit.models.Browser;
+import com.looksee.visualDesignAudit.models.ColorData;
+import com.looksee.visualDesignAudit.models.ElementState;
+import com.looksee.visualDesignAudit.models.ImageElementState;
+import com.looksee.visualDesignAudit.models.PageLoadAnimation;
+import com.looksee.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.enums.BrowserEnvironment;
+import com.looksee.visualDesignAudit.models.enums.BrowserType;
+import com.looksee.visualDesignAudit.services.BrowserService;
 
 
 /**
@@ -340,10 +340,10 @@ public class BrowserUtils {
 	 * @param source valid html source
 	 * @return {@link List list} of link urls
 	 */
-	public static List<com.looksee.audit.visualDesignAudit.models.Element> extractLinks(List<com.looksee.audit.visualDesignAudit.models.Element> elements) {
-		List<com.looksee.audit.visualDesignAudit.models.Element> links = new ArrayList<>();
+	public static List<com.looksee.visualDesignAudit.models.Element> extractLinks(List<com.looksee.visualDesignAudit.models.Element> elements) {
+		List<com.looksee.visualDesignAudit.models.Element> links = new ArrayList<>();
 		
-		for(com.looksee.audit.visualDesignAudit.models.Element element : elements) {
+		for(com.looksee.visualDesignAudit.models.Element element : elements) {
 			if(element.getName().equalsIgnoreCase("a")) {
 				links.add(element);
 			}

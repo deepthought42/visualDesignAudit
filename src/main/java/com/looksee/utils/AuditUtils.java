@@ -7,17 +7,17 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.models.Audit;
-import com.looksee.audit.visualDesignAudit.models.AuditRecord;
-import com.looksee.audit.visualDesignAudit.models.AuditScore;
-import com.looksee.audit.visualDesignAudit.models.PageAuditRecord;
-import com.looksee.audit.visualDesignAudit.models.ReadingComplexityIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.SentenceIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.StockImageIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.audit.visualDesignAudit.models.enums.AuditName;
-import com.looksee.audit.visualDesignAudit.models.enums.AuditSubcategory;
+import com.looksee.visualDesignAudit.models.Audit;
+import com.looksee.visualDesignAudit.models.AuditRecord;
+import com.looksee.visualDesignAudit.models.AuditScore;
+import com.looksee.visualDesignAudit.models.PageAuditRecord;
+import com.looksee.visualDesignAudit.models.ReadingComplexityIssueMessage;
+import com.looksee.visualDesignAudit.models.SentenceIssueMessage;
+import com.looksee.visualDesignAudit.models.StockImageIssueMessage;
+import com.looksee.visualDesignAudit.models.UXIssueMessage;
+import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
+import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
 
 
 public class AuditUtils {

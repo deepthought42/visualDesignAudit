@@ -22,12 +22,12 @@ import org.openimaj.image.analysis.colour.CIEDE2000;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.gcp.GoogleCloudStorage;
-import com.looksee.audit.visualDesignAudit.models.ColorData;
-import com.looksee.audit.visualDesignAudit.models.ColorUsageStat;
-import com.looksee.audit.visualDesignAudit.models.ElementState;
-import com.looksee.audit.visualDesignAudit.models.PageState;
-import com.looksee.audit.visualDesignAudit.models.enums.BrowserType;
+import com.looksee.visualDesignAudit.gcp.GoogleCloudStorage;
+import com.looksee.visualDesignAudit.models.ColorData;
+import com.looksee.visualDesignAudit.models.ColorUsageStat;
+import com.looksee.visualDesignAudit.models.ElementState;
+import com.looksee.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.enums.BrowserType;
 
 import io.github.resilience4j.retry.annotation.Retry;
 

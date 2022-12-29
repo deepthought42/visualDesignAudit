@@ -7,8 +7,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.models.ElementState;
-import com.looksee.audit.visualDesignAudit.models.enums.FormType;
+import com.looksee.visualDesignAudit.models.ElementState;
+import com.looksee.visualDesignAudit.models.enums.FormType;
 
 
 public class FormUtils {

@@ -14,10 +14,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.models.ColorData;
-import com.looksee.audit.visualDesignAudit.models.ColorUsageStat;
-import com.looksee.audit.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesign.models.recommend.ColorContrastRecommendation;
+import com.looksee.visualDesignAudit.models.ColorData;
+import com.looksee.visualDesignAudit.models.ColorUsageStat;
+import com.looksee.visualDesignAudit.models.ElementState;
+import com.looksee.visualDesignAudit.models.recommend.ColorContrastRecommendation;
 
 public class ColorUtils {
 	@SuppressWarnings("unused")

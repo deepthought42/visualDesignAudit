@@ -12,15 +12,15 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.models.CIEColorSpace;
-import com.looksee.audit.visualDesignAudit.models.ColorData;
-import com.looksee.audit.visualDesignAudit.models.ColorPaletteIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.PaletteColor;
-import com.looksee.audit.visualDesignAudit.models.Score;
-import com.looksee.audit.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.audit.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.audit.visualDesignAudit.models.enums.ColorScheme;
-import com.looksee.audit.visualDesignAudit.models.enums.Priority;
+import com.looksee.visualDesignAudit.models.CIEColorSpace;
+import com.looksee.visualDesignAudit.models.ColorData;
+import com.looksee.visualDesignAudit.models.ColorPaletteIssueMessage;
+import com.looksee.visualDesignAudit.models.PaletteColor;
+import com.looksee.visualDesignAudit.models.Score;
+import com.looksee.visualDesignAudit.models.UXIssueMessage;
+import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.ColorScheme;
+import com.looksee.visualDesignAudit.models.enums.Priority;
 
 
 /**

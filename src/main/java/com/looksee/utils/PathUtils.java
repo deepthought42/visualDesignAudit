@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.looksee.audit.visualDesignAudit.models.LookseeObject;
-import com.looksee.audit.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.LookseeObject;
+import com.looksee.visualDesignAudit.models.PageState;
 
 
 public class PathUtils {
