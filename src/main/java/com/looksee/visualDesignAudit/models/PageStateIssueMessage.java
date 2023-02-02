@@ -8,7 +8,6 @@ import com.looksee.visualDesignAudit.models.enums.AuditCategory;
 import com.looksee.visualDesignAudit.models.enums.ObservationType;
 import com.looksee.visualDesignAudit.models.enums.Priority;
 
-
 /**
  * A observation of potential error for a given {@link Element element} 
  */

@@ -10,7 +10,6 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import com.looksee.visualDesignAudit.models.enums.FormType;
 import com.looksee.visualDesignAudit.models.message.BugMessage;
 
-
 /**
  * Represents a form tag and the encompassed inputs in a web browser
  */

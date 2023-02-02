@@ -16,9 +16,6 @@ public class PageAuditRecord extends AuditRecord {
 	@Relationship(type = "HAS")
 	private Set<Audit> audits;
 	
-	@Relationship(type = "FOR")
-	private PageState page_state;
-	
 	private long elements_found;
 	private long elements_reviewed;
 	
@@ -38,16 +35,13 @@ public class PageAuditRecord extends AuditRecord {
 	 * @pre status != null;
 	 */
 	public PageAuditRecord(
-			ExecutionStatus status, 
-			Set<Audit> audits, 
-			PageState page_state, 
+			ExecutionStatus status,
 			boolean is_part_of_domain_audit
 	) {
 		assert audits != null;
 		assert status != null;
 		
 		setAudits(audits);
-		setPageState(page_state);
 		setStatus(status);
 		setLevel( AuditLevel.PAGE);
 		setKey(generateKey());
@@ -71,14 +65,6 @@ public class PageAuditRecord extends AuditRecord {
 	
 	public void addAudits(Set<Audit> audits) {
 		this.audits.addAll( audits );
-	}
-
-	public PageState getPageState() {
-		return page_state;
-	}
-
-	public void setPageState(PageState page_state) {
-		this.page_state = page_state;
 	}
 
 	public long getElementsFound() {

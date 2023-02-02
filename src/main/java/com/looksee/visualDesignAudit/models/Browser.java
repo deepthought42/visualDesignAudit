@@ -481,7 +481,8 @@ public class Browser {
 	 * @throws IOException
 	 */
 	@Deprecated
-	public BufferedImage getElementScreenshot(com.looksee.visualDesignAudit.models.Element element) throws IOException{
+	public BufferedImage getElementScreenshot(com.looksee.visualDesignAudit.models.Element
+			element) throws IOException{
 		//calculate element position within screen
 		WebElement web_element = driver.findElement(By.xpath(element.getXpath()));
 		return Shutterbug.shootElementVerticallyCentered(driver, web_element).getImage();

@@ -2,8 +2,8 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>com.looksee</groupId>
   	<artifactId>visualDesignAudit</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
-  	
+  	<version>0.0.1</version>
+  	<packaging>jar</packaging>
   	
   	<properties>
 	    <selenium-version>3.141.59</selenium-version>
@@ -42,7 +42,7 @@
 	    </dependencies>
 	  </dependencyManagement>
 
-	  <dependencies>
+	 <dependencies>
 	    <dependency>
 	      <groupId>org.springframework.boot</groupId>
 	      <artifactId>spring-boot-starter-web</artifactId>
@@ -197,7 +197,12 @@
 		    <version>3.4.0</version>
 		</dependency>
 
-
+		<!-- https://mvnrepository.com/artifact/com.getsentry.raven/raven-logback -->
+		<dependency>
+		    <groupId>com.getsentry.raven</groupId>
+		    <artifactId>raven-logback</artifactId>
+		    <version>8.0.3</version>
+		</dependency>
 				
 		<!-- https://mvnrepository.com/artifact/com.google.cloud/spring-cloud-gcp-starter-storage -->
 		<dependency>
@@ -286,15 +291,30 @@
 	     	</exclusions>
 		</dependency>
 		
-				
-		<!-- https://mvnrepository.com/artifact/com.getsentry.raven/raven-logback -->
+		<!-- https://mvnrepository.com/artifact/io.whelk.flesch.kincaid/whelk-flesch-kincaid -->
 		<dependency>
-		    <groupId>com.getsentry.raven</groupId>
-		    <artifactId>raven-logback</artifactId>
-		    <version>8.0.3</version>
+		    <groupId>io.whelk.flesch.kincaid</groupId>
+		    <artifactId>whelk-flesch-kincaid</artifactId>
+		    <version>0.1.6</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
+		<dependency>
+		    <groupId>edu.stanford.nlp</groupId>
+		    <artifactId>stanford-corenlp</artifactId>
+		    <version>4.2.2</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-pos-tagger -->
+		<dependency>
+		    <groupId>edu.stanford.nlp</groupId>
+		    <artifactId>stanford-corenlp</artifactId>
+			<version>4.2.2</version>
+		    <classifier>models</classifier>
+		</dependency>
+		
 	  </dependencies>
-
+	  
 	  <build>
 	    <plugins>
 	      <plugin>

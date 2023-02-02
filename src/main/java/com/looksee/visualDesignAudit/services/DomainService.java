@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.looksee.visualDesignAudit.models.repository.DesignSystemRepository;
+import com.looksee.visualDesignAudit.models.repository.DomainRepository;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
 import com.looksee.visualDesignAudit.models.Domain;
@@ -17,7 +19,6 @@ import com.looksee.visualDesignAudit.models.Element;
 import com.looksee.visualDesignAudit.models.Form;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.TestUser;
-import com.looksee.visualDesignAudit.models.repository.DomainRepository;
 
 @Service
 public class DomainService {
@@ -27,6 +28,8 @@ public class DomainService {
 	@Autowired
 	private DomainRepository domain_repo;
 	
+	@Autowired
+	private DesignSystemRepository design_system_repo;
 
 	public Set<Domain> getDomains() {
 		return domain_repo.getDomains();
@@ -163,7 +166,7 @@ public class DomainService {
 	}
 
 	public Optional<DesignSystem> getDesignSystem(long domain_id) {
-		return domain_repo.getDesignSystem(domain_id);
+		return design_system_repo.getDesignSystemForDomain(domain_id);
 	}
 
 	public DesignSystem addDesignSystem(long domain_id, long design_system_id) {

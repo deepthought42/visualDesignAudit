@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.ExecutionStatus;
+import com.looksee.visualDesignAudit.models.repository.AuditRecordRepository;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
@@ -18,9 +21,6 @@ import com.looksee.visualDesignAudit.models.Label;
 import com.looksee.visualDesignAudit.models.PageAuditRecord;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.ExecutionStatus;
-import com.looksee.visualDesignAudit.models.repository.AuditRecordRepository;
 
 import io.github.resilience4j.retry.annotation.Retry;
 
@@ -33,9 +33,6 @@ import io.github.resilience4j.retry.annotation.Retry;
 public class AuditRecordService {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(AuditRecordService.class);
-
-	@Autowired
-	private DomainService domain_service;
 	
 	@Autowired
 	private AuditRecordRepository audit_record_repo;
@@ -44,7 +41,6 @@ public class AuditRecordService {
 	@Autowired
 	private PageStateService page_state_service;
 	
-	@Deprecated
 	public AuditRecord save(AuditRecord audit) {
 		assert audit != null;
 
@@ -377,5 +373,15 @@ public class AuditRecordService {
 	 */
 	public PageState findPageWithUrl(long audit_record_id, String url) {
 		return audit_record_repo.findPageWithUrl(audit_record_id, url);
+	}
+	
+	/**
+	 * Retrieves {@link PageState} with given URL for {@link DomainAuditRecord}  
+	 * @param audit_record_id
+	 * @param current_url
+	 * @return
+	 */
+	public AuditRecord findPageWithId(long audit_record_id, long page_id) {
+		return audit_record_repo.findPageWithId(audit_record_id, page_id);
 	}
 }

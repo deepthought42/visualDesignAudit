@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
-import com.looksee.visualDesignAudit.gcp.PubSubAuditRecordPublisherImpl;
+import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
 import com.looksee.visualDesignAudit.gcp.PubSubErrorPublisherImpl;
 import com.looksee.visualDesignAudit.mapper.Body;
 import com.looksee.visualDesignAudit.models.Audit;
@@ -76,30 +76,24 @@ public class AuditController {
 	private PubSubErrorPublisherImpl pubSubErrorPublisherImpl;
 	
 	@Autowired
-	private PubSubAuditRecordPublisherImpl pubSubPageAuditPublisherImpl;
+	private PubSubAuditUpdatePublisherImpl audit_record_topic;
+	
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public ResponseEntity receiveMessage(@RequestBody Body body) 
+	public ResponseEntity<String> receiveMessage(@RequestBody Body body) 
 			throws JsonMappingException, JsonProcessingException, ExecutionException, InterruptedException 
 	{
-			
-			Body.Message message = body.getMessage();
-		    log.warn("message " + message);
-		    
-		    String data = message.getData();
-		    log.warn("data :: "+data);
-		    
-		    //create ObjectMapper instance
-		    ObjectMapper objectMapper = new ObjectMapper();
-		    byte[] decodedBytes = Base64.getUrlDecoder().decode(data);
-		    String decoded_json = new String(decodedBytes);
-		    
-		    //convert json string to object
-		    PageAuditMessage audit_record_msg = objectMapper.readValue(decoded_json, PageAuditMessage.class);
-		    
-		   	JsonMapper mapper = new JsonMapper().builder().addModule(new JavaTimeModule()).build();;
+		Body.Message message = body.getMessage();
+		String data = message.getData();
+	    String target = !data.isEmpty() ? new String(Base64.getDecoder().decode(data)) : "";
+        log.warn("page audit msg received = "+target);
 
-		    try {
+	    ObjectMapper input_mapper = new ObjectMapper();
+	    PageAuditMessage audit_record_msg = input_mapper.readValue(target, PageAuditMessage.class);
+	    
+	    JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+
+	    try {
 		    //retrieve compliance level
 	    	/**
 		    DesignSystem design_system = null;
@@ -137,15 +131,12 @@ public class AuditController {
 														"Reviewing text contrast",
 														AuditCategory.AESTHETICS,
 														AuditLevel.PAGE,
-														-1);
-	
-		   //	getSender().tell(audit_update, getSelf());
-	
+														-1);	
 		   	
 		    String audit_record_json = mapper.writeValueAsString(audit_update);
 			log.warn("audit progress update = "+audit_record_json);
 			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-		    pubSubPageAuditPublisherImpl.publish(audit_record_json);
+			audit_record_topic.publish(audit_record_json);
 		   	
 			/*
 			Audit padding_audits = padding_auditor.execute(page);
@@ -171,8 +162,7 @@ public class AuditController {
 					audit_record_json = mapper.writeValueAsString(audit_update2);
 							
 					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-				    pubSubPageAuditPublisherImpl.publish(audit_record_json);
-					//getSender().tell(audit_update2, getSelf());
+					audit_record_topic.publish(audit_record_json);
 			   	}
 			}
 			catch(Exception e) {
@@ -188,7 +178,6 @@ public class AuditController {
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
 				
-				//getSender().tell(audit_err, getSelf());
 				e.printStackTrace();
 			}
 			
@@ -210,9 +199,7 @@ public class AuditController {
 					audit_record_json = mapper.writeValueAsString(audit_update3);
 					
 					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-				    pubSubPageAuditPublisherImpl.publish(audit_record_json);
-					
-					//getSender().tell(audit_update3, getSelf());
+					audit_record_topic.publish(audit_record_json);
 				}
 			}
 			catch(Exception e) {
@@ -228,7 +215,6 @@ public class AuditController {
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
 			    
-				//getSender().tell(audit_err, getSelf());
 				e.printStackTrace();
 			}
 			
@@ -255,25 +241,11 @@ public class AuditController {
 		    String audit_record_json = mapper.writeValueAsString(audit_update3);
 			
 			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-		    pubSubPageAuditPublisherImpl.publish(audit_record_json);
-			//getContext().getParent().tell(audit_update3, getSelf());
+		    pubSubErrorPublisherImpl.publish(audit_record_json);
 		}
 	
-		return new ResponseEntity("Successfully sent message to audit manager", HttpStatus.OK);
+		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
 	}
-	
-  /*
-  public void publishMessage(String messageId, Map<String, String> attributeMap, String message) throws ExecutionException, InterruptedException {
-      log.info("Sending Message to the topic:::");
-      PubsubMessage pubsubMessage = PubsubMessage.newBuilder()
-              .putAllAttributes(attributeMap)
-              .setData(ByteString.copyFromUtf8(message))
-              .setMessageId(messageId)
-              .build();
-
-      pubSubPublisherImpl.publish(pubsubMessage);
-  }
-  */
 }
 // [END run_pubsub_handler]
 // [END cloudrun_pubsub_handler]
