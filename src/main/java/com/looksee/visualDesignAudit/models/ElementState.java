@@ -1,5 +1,6 @@
 package com.looksee.visualDesignAudit.models;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -335,10 +336,6 @@ public class ElementState extends LookseeObject implements Comparable<ElementSta
 		return outerHtml;
 	}
 
-	public boolean isLeaf() {
-		return getClassification().equals(ElementClassification.LEAF);
-	}
-
 	public ElementClassification getClassification() {
 		return ElementClassification.create(classification);
 	}
@@ -347,6 +344,19 @@ public class ElementState extends LookseeObject implements Comparable<ElementSta
 		this.classification = classification.toString();
 	}
 	
+	/*
+	public List<ElementState> getChildElements() {
+		return childElements;
+	}
+
+	public void setChildElements(List<ElementState> child_elements) {
+		this.childElements = child_elements;
+	}
+	
+	public void addChildElement(ElementState child_element) {
+		this.childElements.add(child_element);
+	}
+*/
 	public Map<String, String> getRenderedCssValues() {
 		return renderedCssValues;
 	}

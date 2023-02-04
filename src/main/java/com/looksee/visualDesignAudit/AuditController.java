@@ -40,13 +40,13 @@ import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
 import com.looksee.visualDesignAudit.gcp.PubSubErrorPublisherImpl;
 import com.looksee.visualDesignAudit.mapper.Body;
 import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
 import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.visualDesignAudit.models.message.AuditError;
+import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.services.DomainService;
@@ -126,12 +126,13 @@ public class AuditController {
 			//audits.add(color_palette_audit);
 		   	AuditProgressUpdate audit_update = new AuditProgressUpdate(
 		   												audit_record_msg.getAccountId(),
-														audit_record_msg.getPageAuditId(),
+														audit_record_msg.getDomainAuditRecordId(),
 														(1.0/3.0),
 														"Reviewing text contrast",
 														AuditCategory.AESTHETICS,
 														AuditLevel.PAGE,
-														-1);	
+														audit_record_msg.getDomainId(), 
+														audit_record_msg.getPageAuditId());	
 		   	
 		    String audit_record_json = mapper.writeValueAsString(audit_update);
 			log.warn("audit progress update = "+audit_record_json);
@@ -151,12 +152,13 @@ public class AuditController {
 			   	if(text_contrast_audit != null) {
 					AuditProgressUpdate audit_update2 = new AuditProgressUpdate(
 																audit_record_msg.getAccountId(),
-																audit_record_msg.getPageAuditId(),
+																audit_record_msg.getDomainAuditRecordId(),
 																(2.0/3.0),
 																"Reviewing non-text contrast for WCAG compliance",
 																AuditCategory.AESTHETICS,
 																AuditLevel.PAGE,
-																-1);
+																audit_record_msg.getDomainId(), 
+																audit_record_msg.getPageAuditId());
 					
 					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
 					audit_record_json = mapper.writeValueAsString(audit_update2);
@@ -171,7 +173,7 @@ public class AuditController {
 													  "An error occurred while performing non-text audit", 
 													  AuditCategory.AESTHETICS, 
 													  (2.0/3.0),
-													  -1);
+													  audit_record_msg.getDomainId());
 				
 				audit_record_json = mapper.writeValueAsString(audit_err);
 				
@@ -188,12 +190,13 @@ public class AuditController {
 				
 					AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
 																audit_record_msg.getAccountId(), 
-																audit_record_msg.getPageAuditId(),
+																audit_record_msg.getDomainAuditRecordId(),
 																1.0,
 																"Completed review of non-text contrast",
 																AuditCategory.AESTHETICS,
 																AuditLevel.PAGE, 
-																-1);
+																audit_record_msg.getDomainId(), 
+																audit_record_msg.getPageAuditId());
 					
 					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
 					audit_record_json = mapper.writeValueAsString(audit_update3);
@@ -204,11 +207,11 @@ public class AuditController {
 			}
 			catch(Exception e) {
 				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
-													  audit_record_msg.getPageAuditId(), 
+													  audit_record_msg.getDomainAuditRecordId(),
 													  "An error occurred while performing non-text audit", 
 													  AuditCategory.AESTHETICS, 
 													  1.0,
-													  -1);
+													  audit_record_msg.getDomainId());
 				
 				audit_record_json = mapper.writeValueAsString(audit_err);
 				
@@ -231,12 +234,13 @@ public class AuditController {
 			
 			AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
 														audit_record_msg.getAccountId(),
-														audit_record_msg.getPageAuditId(),
+														audit_record_msg.getDomainAuditRecordId(),
 														1.0,
 														"Completed review of non-text contrast",
 														AuditCategory.AESTHETICS,
 														AuditLevel.PAGE, 
-														-1);
+														audit_record_msg.getDomainId(), 
+														audit_record_msg.getPageAuditId());
 	
 		    String audit_record_json = mapper.writeValueAsString(audit_update3);
 			

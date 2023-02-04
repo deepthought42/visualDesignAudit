@@ -15,6 +15,7 @@ import com.looksee.visualDesignAudit.models.enums.Priority;
 /**
  * A observation of potential error for a given {@link Element element} 
  */
+@Node
 public class ElementStateIssueMessage extends UXIssueMessage {	
 	private static Logger log = LoggerFactory.getLogger(ElementStateIssueMessage.class);
 
