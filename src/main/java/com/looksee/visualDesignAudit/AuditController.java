@@ -115,15 +115,20 @@ public class AuditController {
 			}
 				     */
 		    
+	    	log.warn("retrieving design system  for domain with id: " +audit_record_msg.getDomainId());
 			DesignSystem design_system = domain_service.getDesignSystem(audit_record_msg.getDomainId()).get();
 
+			log.warn("Retreiving page audit record with id = "+audit_record_msg.getPageAuditId());
 			AuditRecord audit_record = audit_record_service.findById(audit_record_msg.getPageAuditId()).get();
-			PageState page = page_state_service.findById(audit_record.getId()).get();
+			
+			log.warn("Looking up PageState with id = "+audit_record_msg.getPageId());
+			PageState page = page_state_service.findById(audit_record_msg.getPageId()).get();
 		   	//check if page state already
 				//perform audit and return audit result
 		   
 		   	//Audit color_palette_audit = color_palette_auditor.execute(page);
 			//audits.add(color_palette_audit);
+			log.warn("creating initial audit progress update");
 		   	AuditProgressUpdate audit_update = new AuditProgressUpdate(
 		   												audit_record_msg.getAccountId(),
 														audit_record_msg.getDomainAuditRecordId(),
