@@ -33,20 +33,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
-import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
-import com.looksee.visualDesignAudit.gcp.PubSubErrorPublisherImpl;
 import com.looksee.visualDesignAudit.mapper.Body;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
 import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.message.AuditError;
-import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.services.DomainService;
@@ -72,12 +64,6 @@ public class AuditController {
 	@Autowired
 	private TextColorContrastAudit non_text_contrast_audit_impl;
 	
-	@Autowired
-	private PubSubErrorPublisherImpl pubSubErrorPublisherImpl;
-	
-	@Autowired
-	private PubSubAuditUpdatePublisherImpl audit_record_topic;
-	
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<String> receiveMessage(@RequestBody Body body) 
@@ -91,7 +77,7 @@ public class AuditController {
 	    ObjectMapper input_mapper = new ObjectMapper();
 	    PageAuditMessage audit_record_msg = input_mapper.readValue(target, PageAuditMessage.class);
 	    
-	    JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+	    //JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
 	    try {
 		    //retrieve compliance level
@@ -128,11 +114,12 @@ public class AuditController {
 		   
 		   	//Audit color_palette_audit = color_palette_auditor.execute(page);
 			//audits.add(color_palette_audit);
+			/*
 			log.warn("creating initial audit progress update");
 		   	AuditProgressUpdate audit_update = new AuditProgressUpdate(
 		   												audit_record_msg.getAccountId(),
 														audit_record_msg.getDomainAuditRecordId(),
-														(1.0/3.0),
+														0.05,
 														"Reviewing text contrast",
 														AuditCategory.AESTHETICS,
 														AuditLevel.PAGE,
@@ -142,8 +129,8 @@ public class AuditController {
 		    String audit_record_json = mapper.writeValueAsString(audit_update);
 			log.warn("audit progress update = "+audit_record_json);
 			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-			audit_record_topic.publish(audit_record_json);
-		   	
+			audit_update_topic.publish(audit_record_json);
+		   	*/
 			/*
 			Audit padding_audits = padding_auditor.execute(page);
 			audits.add(padding_audits);
@@ -154,7 +141,10 @@ public class AuditController {
 			
 			try {
 			   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
+			   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
+			   	/* 
 			   	if(text_contrast_audit != null) {
+	
 					AuditProgressUpdate audit_update2 = new AuditProgressUpdate(
 																audit_record_msg.getAccountId(),
 																audit_record_msg.getDomainAuditRecordId(),
@@ -165,14 +155,16 @@ public class AuditController {
 																audit_record_msg.getDomainId(), 
 																audit_record_msg.getPageAuditId());
 					
-					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
 					audit_record_json = mapper.writeValueAsString(audit_update2);
-							
+				
+					log.warn("audit progress update = "+audit_record_json);
 					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 					audit_record_topic.publish(audit_record_json);
 			   	}
+			   	 */
 			}
 			catch(Exception e) {
+				/*
 				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
 													  audit_record_msg.getDomainAuditRecordId(),
 													  "An error occurred while performing non-text audit", 
@@ -181,16 +173,19 @@ public class AuditController {
 													  audit_record_msg.getDomainId());
 				
 				audit_record_json = mapper.writeValueAsString(audit_err);
-				
+				log.warn("audit progress update = "+audit_record_json);
+
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
-				
+				*/
 				e.printStackTrace();
 			}
 			
 			
 			try {
 				Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
+				audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
+				/*
 				if( non_text_contrast_audit != null ) {
 				
 					AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
@@ -203,14 +198,16 @@ public class AuditController {
 																audit_record_msg.getDomainId(), 
 																audit_record_msg.getPageAuditId());
 					
-					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
-					audit_record_json = mapper.writeValueAsString(audit_update3);
 					
+					audit_record_json = mapper.writeValueAsString(audit_update3);
+					log.warn("audit progress update = "+audit_record_json);
 					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 					audit_record_topic.publish(audit_record_json);
 				}
+				 */
 			}
 			catch(Exception e) {
+				/*
 				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
 													  audit_record_msg.getDomainAuditRecordId(),
 													  "An error occurred while performing non-text audit", 
@@ -219,10 +216,11 @@ public class AuditController {
 													  audit_record_msg.getDomainId());
 				
 				audit_record_json = mapper.writeValueAsString(audit_err);
-				
+				log.warn("audit progress update = "+audit_record_json);
+
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
-			    
+			    */
 				e.printStackTrace();
 			}
 			
@@ -236,7 +234,7 @@ public class AuditController {
 			log.warn("-------------------------------------------------------------");
 	
 			
-			
+			/*
 			AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
 														audit_record_msg.getAccountId(),
 														audit_record_msg.getDomainAuditRecordId(),
@@ -248,11 +246,28 @@ public class AuditController {
 														audit_record_msg.getPageAuditId());
 	
 		    String audit_record_json = mapper.writeValueAsString(audit_update3);
-			
+			log.warn("audit progress update = "+audit_record_json);
+
 			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 		    pubSubErrorPublisherImpl.publish(audit_record_json);
+		    */
 		}
-	
+
+	    /*
+	    AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
+																	audit_record_msg.getDomainAuditRecordId(),
+																	1.0, 
+																	"Content Audit Compelete!",
+																	AuditCategory.CONTENT, 
+																	AuditLevel.PAGE, 
+																	audit_record_msg.getDomainId(), 
+																	audit_record_msg.getPageAuditId());
+
+		String audit_record_json = mapper.writeValueAsString(audit_update);
+		
+		audit_update_topic.publish(audit_record_json);
+		*/
+	    
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
 	}
 }
