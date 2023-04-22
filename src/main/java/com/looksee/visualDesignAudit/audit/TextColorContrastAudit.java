@@ -29,7 +29,6 @@ import com.looksee.visualDesignAudit.models.enums.WCAGComplianceLevel;
 import com.looksee.visualDesignAudit.models.recommend.ColorContrastRecommendation;
 import com.looksee.visualDesignAudit.models.recommend.Recommendation;
 import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.PageStateService;
 import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
@@ -43,9 +42,6 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 	
 	@Autowired
 	private AuditService audit_service;
-	
-	@Autowired
-	private PageStateService page_state_service;
 
 	@Autowired
 	private UXIssueMessageService issue_message_service;
@@ -79,9 +75,9 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 			}
 		}
 		
-		List<ElementState> elements = page_state_service.getElementStates(page_state.getId());
+		//List<ElementState> elements = page_state_service.getElementStates(page_state.getId());
 		//filter elements that aren't text elements
-		List<ElementState> element_list = BrowserUtils.getTextElements(elements);
+		List<ElementState> element_list = BrowserUtils.getTextElements(page_state.getElements());
 		
 		String why_it_matters = "Color, just like the overall design, goes beyond aesthetics. It impacts the" + 
 				" usability and functionality of your website, deciding what information" + 
@@ -157,7 +153,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																									element.getTextContrast(),
 																									font_color.rgb(),
 																									background_color.rgb(),
-																									null, 
+																									element, 
 																									AuditCategory.AESTHETICS,
 																									labels,
 																									ada_compliance, 
@@ -168,7 +164,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																									recommendation);
 
 							low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-							issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+							//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 							issue_messages.add(low_header_contrast_observation);							
 							//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 						}
@@ -193,7 +189,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										null, 
+																										element, 
 																										AuditCategory.AESTHETICS,
 																										labels,
 																										ada_compliance, 
@@ -204,7 +200,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										recommendation);
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);							
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -225,7 +221,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										null, 
+																										element, 
 																										AuditCategory.AESTHETICS,
 																										labels,
 																										ada_compliance, 
@@ -236,7 +232,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										"");
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -259,7 +255,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										null, 
+																										element, 
 																										AuditCategory.AESTHETICS,
 																										labels,
 																										ada_compliance, 
@@ -270,7 +266,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										"");
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -294,7 +290,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																						element.getTextContrast(),
 																						font_color.rgb(),
 																						background_color.rgb(),
-																						null, 
+																						element, 
 																						AuditCategory.AESTHETICS,
 																						labels, 
 																						ada_compliance, 
@@ -307,7 +303,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 
 							//No points are rewarded for low contrast text
 							low_text_observation = issue_message_service.saveColorContrast(low_text_observation);
-							issue_message_service.addElement(low_text_observation.getId(), element.getId());
+							//issue_message_service.addElement(low_text_observation.getId(), element.getId());
 							issue_messages.add(low_text_observation);
 							//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_text_observation);
 						}
@@ -329,7 +325,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							null, 
+																							element, 
 																							AuditCategory.AESTHETICS,
 																							labels, 
 																							ada_compliance, 
@@ -340,7 +336,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							recommendation);
 								
 								med_contrast_text_observation = issue_message_service.saveColorContrast(med_contrast_text_observation);
-								issue_message_service.addElement(med_contrast_text_observation.getId(), element.getId());
+								//issue_message_service.addElement(med_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(med_contrast_text_observation);
 							}
 							else {
@@ -356,7 +352,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							null, 
+																							element, 
 																							AuditCategory.AESTHETICS,
 																							labels, 
 																							ada_compliance, 
@@ -367,7 +363,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							"");
 								
 								high_contrast_text_observation = issue_message_service.saveColorContrast(high_contrast_text_observation);
-								issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
+								//issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(high_contrast_text_observation);
 							}
 						}
@@ -386,7 +382,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							null, 
+																							element, 
 																							AuditCategory.AESTHETICS,
 																							labels, 
 																							ada_compliance, 
@@ -397,7 +393,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							"");
 								
 								high_contrast_text_observation = issue_message_service.saveColorContrast(high_contrast_text_observation);
-								issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
+								//issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(high_contrast_text_observation);
 							}
 						}
@@ -452,20 +448,20 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 		//log.warn("TEXT COLOR CONTRAST AUDIT SCORE   ::   " + points_earned + " : " + max_points);	
 
 		Audit audit = new Audit(AuditCategory.AESTHETICS,
-						 AuditSubcategory.COLOR_MANAGEMENT,
-					     AuditName.TEXT_BACKGROUND_CONTRAST,
-					     points_earned,
-					     new HashSet<>(), 
-					     AuditLevel.PAGE,
-					     max_points,
-					     page_state.getUrl(),
-					     why_it_matters,
-					     "Text with contrast below 4.5", 
-						 true);
+								 AuditSubcategory.COLOR_MANAGEMENT,
+							     AuditName.TEXT_BACKGROUND_CONTRAST,
+							     points_earned,
+							     issue_messages, 
+							     AuditLevel.PAGE,
+							     max_points,
+							     page_state.getUrl(),
+							     why_it_matters,
+							     "Text with contrast below 4.5", 
+								 true);
 		
-		audit_service.save(audit);
-		audit_service.addAllIssues(audit.getId(), issue_messages);
-		return audit;
+		return audit_service.save(audit);
+		//audit_service.addAllIssues(audit.getId(), issue_messages);
+		//return audit;
 	}
 
 	/**

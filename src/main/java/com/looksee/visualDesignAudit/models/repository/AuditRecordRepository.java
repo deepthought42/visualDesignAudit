@@ -42,10 +42,10 @@ public interface AuditRecordRepository extends Neo4jRepository<AuditRecord, Long
 	@Query("MATCH (dar:DomainAuditRecord) WITH dar MATCH (par:PageAuditRecord{key:$page_audit_key}) WHERE id(dar)=$domain_audit_record_id MERGE (dar)-[h:HAS]->(par) RETURN dar")
 	public void addPageAuditRecord(@Param("domain_audit_record_id") long domain_audit_record_id, @Param("page_audit_key") String page_audit_key);
 
-	@Query("MATCH (dar:DomainAuditRecord) WITH dar MATCH (par:PageAuditRecord) WHERE id(dar)=$domain_audit_record_id AND id(par)=$page_audit_id MERGE (dar)-[h:HAS]->(par) RETURN dar")
+	@Query("MATCH (dar:DomainAuditRecord) WITH dar WHERE id(dar)=$domain_audit_record_id MATCH (par:PageAuditRecord) WHERE id(par)=$page_audit_id MERGE (dar)-[h:HAS]->(par) RETURN dar")
 	public void addPageAuditRecord(@Param("domain_audit_record_id") long domain_audit_record_id, @Param("page_audit_id") long page_audit_record_id);
 	
-	@Query("MATCH (ar:AuditRecord)-[]->(audit:Audit) WHERE id(ar)=$audit_record_id RETURN audit")
+	@Query("MATCH (ar:PageAuditRecord)-[:HAS]->(audit:Audit) WHERE id(ar)=$audit_record_id RETURN audit")
 	public Set<Audit> getAllAudits(@Param("audit_record_id") long audit_record_id);
 	
 	@Query("MATCH (d:Domain)-[]-(ar:DomainAuditRecord) WHERE id(d)=$domain_id RETURN ar ORDER BY ar.created_at DESC LIMIT 1")
@@ -163,10 +163,10 @@ public interface AuditRecordRepository extends Neo4jRepository<AuditRecord, Long
 	@Query("MATCH (ar:DomainAuditRecord) WITH ar MATCH (journey:Journey) WHERE id(ar)=$audit_record_id AND id(journey)=$journey_id MERGE (ar)-[:HAS_PATH]->(journey) RETURN ar")
 	public AuditRecord addJourney(@Param("audit_record_id") long audit_record_id, @Param("journey_id")  long journey_id);
 
-	@Query("MATCH (audit_record:DomainAuditRecord) WITH audit_record WHERE id(audit_record)=$audit_record_id MATCH (audit_record)-[:HAS]->(page:PageState) WHERE page.url=$page_url RETURN page")
+	@Query("MATCH (audit_record:DomainAuditRecord) WITH audit_record WHERE id(audit_record)=$audit_record_id MATCH (audit_record)-[:FOR]->(page:PageState) WHERE page.url=$page_url RETURN page")
 	public PageState findPageWithUrl(@Param("audit_record_id") long audit_record_id, @Param("page_url") String page_url);
 
-	@Query("MATCH (audit_record:DomainAuditRecord) WITH audit_record WHERE id(audit_record)=$audit_record_id MATCH (audit_record)-[:HAS]->(page:PageState) WHERE id(page)=$page_id RETURN audit_record")
+	@Query("MATCH (audit_record:DomainAuditRecord) WITH audit_record WHERE id(audit_record)=$audit_record_id MATCH (audit_record)-[:FOR]->(page:PageState) WHERE id(page)=$page_id RETURN audit_record")
 	public AuditRecord findPageWithId(@Param("audit_record_id") long audit_record_id, @Param("page_id") long page_id);
 	
 }

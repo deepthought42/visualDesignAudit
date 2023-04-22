@@ -35,7 +35,6 @@ import com.looksee.visualDesignAudit.models.enums.WCAGComplianceLevel;
 import com.looksee.visualDesignAudit.models.recommend.ColorContrastRecommendation;
 import com.looksee.visualDesignAudit.models.recommend.Recommendation;
 import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.PageStateService;
 import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
@@ -46,9 +45,6 @@ import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(NonTextColorContrastAudit.class);
-
-	@Autowired
-	private PageStateService page_state_service;
 	
 	@Autowired
 	private AuditService audit_service;
@@ -87,10 +83,9 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 		}
 		
 		//get all button elements
-		List<ElementState> elements = page_state_service.getElementStates(page_state.getId());
-		List<ElementState> non_text_elements = getAllButtons(elements);
+		List<ElementState> non_text_elements = getAllButtons(page_state.getElements());
 
-		non_text_elements.addAll(getAllInputs(elements));
+		non_text_elements.addAll(getAllInputs(page_state.getElements()));
 			
 		return evaluateNonTextContrast(page_state, non_text_elements, design_system);
 	}
@@ -153,8 +148,8 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 				//retrieve all elements for page state
 				//evaluate each element to see if xpath is a subset of element xpath, keeping the elements with shortest difference
 				ColorData parent_bkg = null;
-				List<ElementState> elements = page_state_service.getElementStates(page_state.getKey());
-				for(ElementState element_state : elements) {
+				//List<ElementState> elements = page_state_service.getElementStates(page_state.getKey());
+				for(ElementState element_state : page_state.getElements()) {
 					if(element_state.getKey().contentEquals(element.getKey())) {
 						continue;
 					}
@@ -232,7 +227,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																				highest_contrast,
 																				element_bkg.rgb(),
 																				parent_bkg.rgb(),
-																				null,
+																				element,
 																				AuditCategory.AESTHETICS,
 																				labels,
 																				ada_compliance,
@@ -243,7 +238,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																				recommendation);
 					
 					low_contrast_issue = issue_message_service.saveColorContrast(low_contrast_issue);
-					issue_message_service.addElement(low_contrast_issue.getId(), element.getId());
+					//issue_message_service.addElement(low_contrast_issue.getId(), element.getId());
 					issue_messages.add(low_contrast_issue);
 					//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_contrast_issue);
 				}
@@ -264,7 +259,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																				highest_contrast,
 																				element_bkg.rgb(),
 																				parent_bkg.rgb(),
-																				null,
+																				element,
 																				AuditCategory.AESTHETICS,
 																				labels,
 																				ada_compliance,
@@ -275,7 +270,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																				recommendation);
 					
 					accessible_contrast = issue_message_service.saveColorContrast(accessible_contrast);
-					issue_message_service.addElement(accessible_contrast.getId(), element.getId());
+					//issue_message_service.addElement(accessible_contrast.getId(), element.getId());
 					issue_messages.add(accessible_contrast);
 				}
 			}
@@ -320,7 +315,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 								 AuditName.NON_TEXT_BACKGROUND_CONTRAST,
 								 points_earned,
-								 new HashSet<>(),
+								 issue_messages,
 								 AuditLevel.PAGE,
 								 max_points,
 								 page_state.getUrl(),
@@ -329,7 +324,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 								 true);
 
 		audit_service.save(audit);
-		audit_service.addAllIssues(audit.getId(), issue_messages);
+		//audit_service.addAllIssues(audit.getId(), issue_messages);
 		return audit;
 	}
 

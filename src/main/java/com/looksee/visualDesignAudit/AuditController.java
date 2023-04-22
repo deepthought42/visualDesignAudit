@@ -18,6 +18,8 @@ package com.looksee.visualDesignAudit;
 // [START cloudrun_pubsub_handler]
 // [START run_pubsub_handler]
 import java.util.Base64;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
@@ -33,12 +35,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
 import com.looksee.visualDesignAudit.mapper.Body;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
+import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.services.DomainService;
@@ -62,7 +67,7 @@ public class AuditController {
 	private TextColorContrastAudit text_contrast_audit_impl;
 	
 	@Autowired
-	private TextColorContrastAudit non_text_contrast_audit_impl;
+	private NonTextColorContrastAudit non_text_contrast_audit_impl;
 	
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
@@ -79,7 +84,7 @@ public class AuditController {
 	    
 	    //JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
-	    try {
+	    //try {
 		    //retrieve compliance level
 	    	/**
 		    DesignSystem design_system = null;
@@ -109,6 +114,8 @@ public class AuditController {
 			
 			log.warn("Looking up PageState with id = "+audit_record_msg.getPageId());
 			PageState page = page_state_service.findById(audit_record_msg.getPageId()).get();
+			List<ElementState> elements = page_state_service.getElementStates(page.getId());
+			page.setElements(elements);
 		   	//check if page state already
 				//perform audit and return audit result
 		   
@@ -138,10 +145,13 @@ public class AuditController {
 			Audit margin_audits = margin_auditor.execute(page);
 			audits.add(margin_audits);
 			 */
-			
-			try {
-			   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
-			   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
+	    	Set<Audit> audits = audit_record_service.getAllAudits(audit_record.getId());
+
+			//try {
+	    		if(!auditAlreadyExists(audits, AuditName.TEXT_BACKGROUND_CONTRAST)) {    			
+				   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
+				   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
+	    		}
 			   	/* 
 			   	if(text_contrast_audit != null) {
 	
@@ -162,9 +172,9 @@ public class AuditController {
 					audit_record_topic.publish(audit_record_json);
 			   	}
 			   	 */
+	    		/*
 			}
 			catch(Exception e) {
-				/*
 				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
 													  audit_record_msg.getDomainAuditRecordId(),
 													  "An error occurred while performing non-text audit", 
@@ -177,14 +187,17 @@ public class AuditController {
 
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
-				*/
 				e.printStackTrace();
 			}
+	    		 */
 			
 			
-			try {
-				Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
-				audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
+//			try {
+	    		if(!auditAlreadyExists(audits, AuditName.NON_TEXT_BACKGROUND_CONTRAST)) {    			
+	
+					Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
+					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
+	    		}
 				/*
 				if( non_text_contrast_audit != null ) {
 				
@@ -204,9 +217,9 @@ public class AuditController {
 					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 					audit_record_topic.publish(audit_record_json);
 				}
-				 */
 			}
 			catch(Exception e) {
+				 */
 				/*
 				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
 													  audit_record_msg.getDomainAuditRecordId(),
@@ -220,10 +233,11 @@ public class AuditController {
 
 				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 				pubSubErrorPublisherImpl.publish(audit_record_json);
-			    */
 				e.printStackTrace();
 			}
+				 */
 			
+			/*
 		}catch(Exception e) {
 			log.warn("exception caught during aesthetic audit");
 			e.printStackTrace();
@@ -233,7 +247,8 @@ public class AuditController {
 			log.warn("-------------------------------------------------------------");
 			log.warn("-------------------------------------------------------------");
 	
-			
+			return new ResponseEntity<String>("Error executing visual design audit for page = "+, HttpStatus.INTERNAL_SERVER_ERROR);
+*/
 			/*
 			AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
 														audit_record_msg.getAccountId(),
@@ -251,7 +266,7 @@ public class AuditController {
 			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
 		    pubSubErrorPublisherImpl.publish(audit_record_json);
 		    */
-		}
+		//}
 
 	    /*
 	    AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
@@ -269,6 +284,30 @@ public class AuditController {
 		*/
 	    
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
+	}
+	
+	/**
+	 * Checks if the any of the provided {@link Audit audits} have a name that matches 
+	 * 		the provided {@linkplain AuditName}
+	 * 
+	 * @param audits
+	 * @param audit_name
+	 * 
+	 * @return
+	 * 
+	 * @pre audits != null
+	 * @pre audit_name != null
+	 */
+	private boolean auditAlreadyExists(Set<Audit> audits, AuditName audit_name) {
+		assert audits != null;
+		assert audit_name != null;
+		
+		for(Audit audit : audits) {
+			if(audit_name.equals(audit.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 // [END run_pubsub_handler]
