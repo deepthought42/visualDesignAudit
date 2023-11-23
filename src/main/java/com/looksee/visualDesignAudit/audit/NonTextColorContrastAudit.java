@@ -136,150 +136,121 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 		labels.add("accessibility");
 		labels.add("wcag");
 		
-		if(page_state.getUrl().contains("apple.com/shop/buy-watch/apple-watch")) {
-			log.warn("-------------------------------------------------------------");
-			log.warn(non_text_elements.size()+" non-text elements being evaluated");
-			log.warn("-------------------------------------------------------------");
-		}
 		for(ElementState element : non_text_elements) {
-			//ColorData font_color = new ColorData(element.getRenderedCssValues().get("color"));
-			//get parent element of button
-			try {
-				//retrieve all elements for page state
-				//evaluate each element to see if xpath is a subset of element xpath, keeping the elements with shortest difference
-				ColorData parent_bkg = null;
-				//List<ElementState> elements = page_state_service.getElementStates(page_state.getKey());
-				for(ElementState element_state : page_state.getElements()) {
-					if(element_state.getKey().contentEquals(element.getKey())) {
-						continue;
-					}
-
-					if(element.getXpath().contains(element_state.getXpath())) {
-
-							parent_bkg = new ColorData(element_state.getBackgroundColor());
-							break;
-					}
+			//retrieve all elements for page state
+			//evaluate each element to see if xpath is a subset of element xpath, keeping the elements with shortest difference
+			ColorData parent_bkg = null;
+			//List<ElementState> elements = page_state_service.getElementStates(page_state.getKey());
+			for(ElementState element_state : page_state.getElements()) {
+				if(element_state.getKey().contentEquals(element.getKey())) {
+					continue;
 				}
 
-				//getting border color
-				ColorData element_bkg = new ColorData(element.getBackgroundColor());
-				String border_color_rgb = element_bkg.rgb();
-				if(element.getRenderedCssValues().get("border-inline-start-width") != "0px") {
-					border_color_rgb = element.getRenderedCssValues().get("border-inline-start-color");
-				}
-				else if(element.getRenderedCssValues().get("border-inline-end-width") != "0px") {
-					border_color_rgb = element.getRenderedCssValues().get("border-inline-end-color");
-				}
-				else if(element.getRenderedCssValues().get("border-block-start-width") != "0px") {
-					border_color_rgb = element.getRenderedCssValues().get("border-block-start-color");
-				}
-				else if(element.getRenderedCssValues().get("border-block-end-width") != "0px") {
-					border_color_rgb = element.getRenderedCssValues().get("border-block-end-color");
-				}
-
-				ColorData border_color = new ColorData(border_color_rgb);
-				
-				//if element has border color different than element then set element_bkg to border color
-				if(!element.getName().contentEquals("input")
-						&& hasContinuousBorder(element) 
-						&& !borderColorMatchesBackground(element))
-				{
-					element_bkg = getBorderColor(element);
-				}
-				
-				/*
-				if(parent_bkg == null) {
-					parent_bkg = new ColorData("rgb(255,255,255)");
-				}
-				*/
-				parent_bkg = new ColorData(element.getBackgroundColor());
-				double contrast = ColorData.computeContrast(parent_bkg, element_bkg);
-				double border_contrast = ColorData.computeContrast(parent_bkg, border_color);
-				double highest_contrast = 0.0;
-				if(contrast > border_contrast) {
-					highest_contrast = contrast;
-				}
-				else {
-					highest_contrast = border_contrast;
-				}
-				
-				/*
-				element = element_state_service.findById(element.getId());
-				element.setNonTextContrast(highest_contrast);
-				element = element_state_service.save(element);
-				*/
-				
-				//calculate contrast of button background with background of parent element
-				if(highest_contrast < 3.0){
-					String title = "Element has low contrast";
-					String description = "Element background has low contrast against the surrounding background";
-					//no points are rewarded for low contrast
-					
-					String ada_compliance = "Non-text items should have a minimum contrast ratio of 3:1.";
-					
-					String recommendation = "use a darker/lighter shade of "+ element.getBackgroundColor() +" to achieve a contrast of 3:1";
-					Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
-																								 parent_bkg);
-					
-					ColorContrastIssueMessage low_contrast_issue = new ColorContrastIssueMessage(
-																				Priority.HIGH,
-																				description,
-																				highest_contrast,
-																				element_bkg.rgb(),
-																				parent_bkg.rgb(),
-																				element,
-																				AuditCategory.AESTHETICS,
-																				labels,
-																				ada_compliance,
-																				title,
-																				null, 
-																				0, 
-																				1, 
-																				recommendation);
-					
-					low_contrast_issue = issue_message_service.saveColorContrast(low_contrast_issue);
-					//issue_message_service.addElement(low_contrast_issue.getId(), element.getId());
-					issue_messages.add(low_contrast_issue);
-					//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_contrast_issue);
-				}
-				else {
-					String title = "Element contrast is accessisible";
-					String description = "Element background has appropriate contrast for accessibility";
-					//no points are rewarded for low contrast
-					
-					String ada_compliance = "Element is compliant with WCAG 2.1 " + design_system.getWcagComplianceLevel() + " standards.";
-					
-					String recommendation = "";
-					Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
-																								 parent_bkg);
-					
-					ColorContrastIssueMessage accessible_contrast = new ColorContrastIssueMessage(
-																				Priority.HIGH,
-																				description,
-																				highest_contrast,
-																				element_bkg.rgb(),
-																				parent_bkg.rgb(),
-																				element,
-																				AuditCategory.AESTHETICS,
-																				labels,
-																				ada_compliance,
-																				title,
-																				null, 
-																				1, 
-																				1, 
-																				recommendation);
-					
-					accessible_contrast = issue_message_service.saveColorContrast(accessible_contrast);
-					//issue_message_service.addElement(accessible_contrast.getId(), element.getId());
-					issue_messages.add(accessible_contrast);
+				if(element.getXpath().contains(element_state.getXpath())) {
+					parent_bkg = new ColorData(element_state.getBackgroundColor());
+					break;
 				}
 			}
-			catch(NullPointerException e) {
-				log.warn("null pointer..." + e.getMessage());
-				e.printStackTrace();
+
+			//getting border color
+			log.warn("element background color = "+element.getBackgroundColor());
+			ColorData element_bkg = new ColorData(element.getBackgroundColor());
+			String border_color_rgb = element_bkg.rgb();
+			log.warn("initial border color = "+border_color_rgb);
+			if(element.getRenderedCssValues().get("border-inline-start-width") != "0px") {
+				border_color_rgb = element.getRenderedCssValues().get("border-inline-start-color");
 			}
-			catch(Exception e) {
-				e.printStackTrace();
+			else if(element.getRenderedCssValues().get("border-inline-end-width") != "0px") {
+				border_color_rgb = element.getRenderedCssValues().get("border-inline-end-color");
+			}
+			else if(element.getRenderedCssValues().get("border-block-start-width") != "0px") {
+				border_color_rgb = element.getRenderedCssValues().get("border-block-start-color");
+			}
+			else if(element.getRenderedCssValues().get("border-block-end-width") != "0px") {
+				border_color_rgb = element.getRenderedCssValues().get("border-block-end-color");
+			}
+			log.warn("final border color =" + border_color_rgb);
+			ColorData border_color = new ColorData(border_color_rgb);
+			
+			//if element has border color different than element then set element_bkg to border color
+			if(!element.getName().contentEquals("input")
+					&& hasContinuousBorder(element) 
+					&& !borderColorMatchesBackground(element))
+			{
+				element_bkg = getBorderColor(element);
+			}
+			
+			parent_bkg = new ColorData(element.getBackgroundColor());
+			double contrast = ColorData.computeContrast(parent_bkg, element_bkg);
+			double border_contrast = ColorData.computeContrast(parent_bkg, border_color);
+			double highest_contrast = 0.0;
+			if(contrast > border_contrast) {
+				highest_contrast = contrast;
+			}
+			else {
+				highest_contrast = border_contrast;
+			}
+			
+			//calculate contrast of button background with background of parent element
+			if(highest_contrast < 3.0){
+				String title = "Element has low contrast";
+				String description = "Element background has low contrast against the surrounding background";
+				//no points are rewarded for low contrast
+				
+				String ada_compliance = "Non-text items should have a minimum contrast ratio of 3:1.";
+				
+				String recommendation = "use a darker/lighter shade of "+ element.getBackgroundColor() +" to achieve a contrast of 3:1";
+				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
+																							 parent_bkg);
+				
+				ColorContrastIssueMessage low_contrast_issue = new ColorContrastIssueMessage(
+																			Priority.HIGH,
+																			description,
+																			highest_contrast,
+																			element_bkg.rgb(),
+																			parent_bkg.rgb(),
+																			AuditCategory.AESTHETICS,
+																			labels,
+																			ada_compliance,
+																			title,
+																			null,
+																			0, 
+																			1, 
+																			recommendation);
+				
+				low_contrast_issue = issue_message_service.saveColorContrast(low_contrast_issue);
+				issue_message_service.addElement(low_contrast_issue.getId(), element.getId());
+				issue_messages.add(low_contrast_issue);
+			}
+			else {
+				String title = "Element contrast exceeds accessibility standards";
+				String description = "Element background exceeds the WCAG contrast guidelines for A level accessibility";
+				//no points are rewarded for low contrast
+				
+				String ada_compliance = "Element is compliant with WCAG 2.1 " + design_system.getWcagComplianceLevel() + " standards.";
+				
+				String recommendation = "";
+				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
+																							 parent_bkg);
+				
+				ColorContrastIssueMessage accessible_contrast = new ColorContrastIssueMessage(
+																			Priority.NONE,
+																			description,
+																			highest_contrast,
+																			element_bkg.rgb(),
+																			parent_bkg.rgb(),
+																			AuditCategory.AESTHETICS,
+																			labels,
+																			ada_compliance,
+																			title,
+																			null,
+																			1, 
+																			1, 
+																			recommendation);
+				
+				accessible_contrast = issue_message_service.saveColorContrast(accessible_contrast);
+				issue_message_service.addElement(accessible_contrast.getId(), element.getId());
+				issue_messages.add(accessible_contrast);
 			}
 		} 
 
@@ -315,7 +286,6 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 								 AuditName.NON_TEXT_BACKGROUND_CONTRAST,
 								 points_earned,
-								 issue_messages,
 								 AuditLevel.PAGE,
 								 max_points,
 								 page_state.getUrl(),
@@ -323,8 +293,8 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 								 description,
 								 true);
 
-		audit_service.save(audit);
-		//audit_service.addAllIssues(audit.getId(), issue_messages);
+		audit = audit_service.save(audit);
+		audit_service.addAllIssues(audit.getId(), issue_messages);
 		return audit;
 	}
 

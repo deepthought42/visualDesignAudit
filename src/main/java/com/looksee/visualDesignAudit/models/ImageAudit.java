@@ -63,12 +63,11 @@ public class ImageAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.IMAGERY, 
 								 AuditName.IMAGE_COPYRIGHT, 
 								 copyright_score.getPointsAchieved(), 
-								 new HashSet<>(), 
 								 AuditLevel.PAGE, 
 								 copyright_score.getMaxPossiblePoints(), 
-								 page_state.getUrl(),
-								 why_it_matters, 
-								 description,
+								 page_state.getUrl(), 
+								 why_it_matters,
+								 description, 
 								 false); 
 						 
 		audit_service.save(audit);
@@ -108,7 +107,6 @@ public class ImageAudit implements IExecutablePageStateAudit {
 																Priority.MEDIUM, 
 																description, 
 																recommendation, 
-																null,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,
@@ -135,7 +133,6 @@ public class ImageAudit implements IExecutablePageStateAudit {
 																Priority.NONE, 
 																description, 
 																recommendation, 
-																null,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,

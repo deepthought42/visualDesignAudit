@@ -6,7 +6,7 @@ import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 /**
  * Intended to contain information about progress an audit
  */
-public class AuditProgressUpdate extends Message {
+public class AuditProgressUpdate extends PageAuditMessage {
 	private long pageAuditId;
 	private AuditCategory category;
 	private AuditLevel level;
@@ -17,20 +17,17 @@ public class AuditProgressUpdate extends Message {
 	
 	public AuditProgressUpdate(
 			long account_id,
-			long audit_record_id,
+			long page_audit_id,
 			double progress,
 			String message, 
 			AuditCategory category,
-			AuditLevel level, 
-			long domain_id, 
-			long page_audit_id
+			AuditLevel level
 	) {
-		super(account_id, audit_record_id, domain_id);
+		super(account_id, page_audit_id);
 		setProgress(progress);
 		setMessage(message);
 		setCategory(category);
 		setLevel(level);
-		setPageAuditId(page_audit_id);
 	}
 	
 	/* GETTERS / SETTERS */

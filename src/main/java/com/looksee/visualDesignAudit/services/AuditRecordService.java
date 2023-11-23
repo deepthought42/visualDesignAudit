@@ -8,14 +8,12 @@ import org.apache.commons.collections4.IterableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.ExecutionStatus;
 import com.looksee.visualDesignAudit.models.repository.AuditRecordRepository;
 import com.looksee.visualDesignAudit.models.repository.AuditRepository;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
-import com.looksee.visualDesignAudit.services.PageStateService;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
@@ -25,14 +23,11 @@ import com.looksee.visualDesignAudit.models.PageAuditRecord;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
 
-import io.github.resilience4j.retry.annotation.Retry;
-
 /**
  * Contains business logic for interacting with and managing audits
  *
  */
 @Service
-@Retry(name = "neoforj")
 public class AuditRecordService {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(AuditRecordService.class);
@@ -46,38 +41,11 @@ public class AuditRecordService {
 	@Autowired
 	private PageStateService page_state_service;
 	
+	@Retryable
 	public AuditRecord save(AuditRecord audit) {
 		assert audit != null;
 
 		return audit_record_repo.save(audit);
-	}
-	
-	public AuditRecord save(AuditRecord audit, Long account_id, Long domain_id) {
-		assert audit != null;
-
-		AuditRecord audit_record = audit_record_repo.save(audit);
-		
-		/*
-		if(audit instanceof DomainAuditRecord 
-				&& account_id != null 
-				&& account_id >= 0 
-				&& domain_id != null 
-				&& domain_id >= 0) 
-		{
-			try {
-				Account account = account_service.findById(account_id).get();
-				int id_start_idx = account.getUserId().indexOf('|');
-				String user_id = account.getUserId().substring(id_start_idx+1);
-				Domain domain = domain_service.findById(domain_id).get();
-				DomainDto domain_dto = domain_dto_service.build(domain);
-				MessageBroadcaster.sendAuditRecord(user_id, domain_dto);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		*/
-		//broadcast audit record to users
-		return audit_record;
 	}
 
 	public Optional<AuditRecord> findById(long id) {
@@ -99,6 +67,14 @@ public class AuditRecordService {
 		Optional<Audit> audit = audit_repo.getAuditForAuditRecord(audit_record_key, audit_key);
 		if(!audit.isPresent()) {
 			audit_record_repo.addAudit(audit_record_key, audit_key);
+		}
+	}
+	
+	public void addAudit(long audit_record_id, Audit audit) {
+		//check if audit already exists for page state
+		Optional<Audit> audit_opt = audit_repo.getAuditForAuditRecord(audit_record_id, audit.getKey());
+		if(!audit_opt.isPresent()) {
+			audit_record_repo.addAudit(audit_record_id, audit.getId());
 		}
 	}
 
@@ -319,43 +295,6 @@ public class AuditRecordService {
 	
 	public AuditRecord addJourney(long audit_record_id, long journey_id) {
 		return audit_record_repo.addJourney(audit_record_id, journey_id);
-	}
-
-	/**
-	 * Update the progress for the appropriate {@linkplain AuditCategory}
-	 * @param auditRecordId
-	 * @param category
-	 * @param account_id
-	 * @param domain_id
-	 * @param progress
-	 * @param message
-	 * @return
-	 */
-	public AuditRecord updateAuditProgress(long auditRecordId, 
-										   AuditCategory category, 
-										   long account_id, 
-										   long domain_id, 
-										   double progress, 
-										   String message) 
-	{
-		AuditRecord audit_record = findById(auditRecordId).get();
-		audit_record.setDataExtractionProgress(1.0);
-		audit_record.setStatus(ExecutionStatus.RUNNING_AUDITS);
-
-		if(AuditCategory.CONTENT.equals(category)) {
-			audit_record.setContentAuditProgress( progress );
-			audit_record.setContentAuditMsg( message);
-		}
-		else if(AuditCategory.AESTHETICS.equals(category)) {
-			audit_record.setAestheticAuditProgress( progress);
-			audit_record.setAestheticMsg(message);
-		}
-		else if(AuditCategory.INFORMATION_ARCHITECTURE.equals(category)) {
-			audit_record.setInfoArchitectureAuditProgress( progress );
-			audit_record.setInfoArchMsg(message);
-		}
-		
-		return save(audit_record, account_id, domain_id);
 	}
 
 	/**

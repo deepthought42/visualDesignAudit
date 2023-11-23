@@ -95,7 +95,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 			labels.add("color contrast");
 			labels.add("wcag");
 			
-			try {	
+			//try {	
 				
 				//if(!element.getOwnedText().isEmpty()){
 				/*
@@ -153,18 +153,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																									element.getTextContrast(),
 																									font_color.rgb(),
 																									background_color.rgb(),
-																									element, 
-																									AuditCategory.AESTHETICS,
+																									AuditCategory.AESTHETICS, 
 																									labels,
-																									ada_compliance, 
-																									title,
-																									font_size+"", 
+																									ada_compliance,
+																									title, 
+																									font_size+"",
 																									0, 
 																									2, 
 																									recommendation);
 
 							low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-							//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+							issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 							issue_messages.add(low_header_contrast_observation);							
 							//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 						}
@@ -189,18 +188,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										element, 
-																										AuditCategory.AESTHETICS,
+																										AuditCategory.AESTHETICS, 
 																										labels,
-																										ada_compliance, 
-																										title,
-																										font_size+"", 
-																										1,
+																										ada_compliance,
+																										title, 
+																										font_size+"",
+																										1, 
 																										2,
 																										recommendation);
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);							
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -221,18 +219,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										element, 
-																										AuditCategory.AESTHETICS,
+																										AuditCategory.AESTHETICS, 
 																										labels,
-																										ada_compliance, 
-																										title,
-																										font_size+"", 
-																										2,
+																										ada_compliance,
+																										title, 
+																										font_size+"",
+																										2, 
 																										2,
 																										"");
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -255,18 +252,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																										element.getTextContrast(),
 																										font_color.rgb(),
 																										background_color.rgb(),
-																										element, 
-																										AuditCategory.AESTHETICS,
+																										AuditCategory.AESTHETICS, 
 																										labels,
-																										ada_compliance, 
-																										title,
-																										font_size+"", 
-																										2,
+																										ada_compliance,
+																										title, 
+																										font_size+"",
+																										2, 
 																										2,
 																										"");
 								
 								low_header_contrast_observation = issue_message_service.saveColorContrast(low_header_contrast_observation);
-								//issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
+								issue_message_service.addElement(low_header_contrast_observation.getId(), element.getId());
 								issue_messages.add(low_header_contrast_observation);
 								//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_header_contrast_observation);
 							}
@@ -290,20 +286,19 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																						element.getTextContrast(),
 																						font_color.rgb(),
 																						background_color.rgb(),
-																						element, 
-																						AuditCategory.AESTHETICS,
-																						labels, 
+																						AuditCategory.AESTHETICS, 
+																						labels,
 																						ada_compliance, 
-																						title,
+																						title, 
 																						font_size+"",
 																						0,
-																						2, 
+																						2,
 																						recommendation);
 							//observations.add(observation_service.save(low_text_observation));
 
 							//No points are rewarded for low contrast text
 							low_text_observation = issue_message_service.saveColorContrast(low_text_observation);
-							//issue_message_service.addElement(low_text_observation.getId(), element.getId());
+							issue_message_service.addElement(low_text_observation.getId(), element.getId());
 							issue_messages.add(low_text_observation);
 							//MessageBroadcaster.sendIssueMessage(page_state.getId(), low_text_observation);
 						}
@@ -325,18 +320,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							element, 
-																							AuditCategory.AESTHETICS,
-																							labels, 
+																							AuditCategory.AESTHETICS, 
+																							labels,
 																							ada_compliance, 
-																							title,
+																							title, 
 																							font_size+"",
 																							1,
-																							2, 
+																							2,
 																							recommendation);
 								
 								med_contrast_text_observation = issue_message_service.saveColorContrast(med_contrast_text_observation);
-								//issue_message_service.addElement(med_contrast_text_observation.getId(), element.getId());
+								issue_message_service.addElement(med_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(med_contrast_text_observation);
 							}
 							else {
@@ -352,18 +346,17 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							element, 
-																							AuditCategory.AESTHETICS,
-																							labels, 
+																							AuditCategory.AESTHETICS, 
+																							labels,
 																							ada_compliance, 
-																							title,
+																							title, 
 																							font_size+"",
 																							2,
-																							2, 
+																							2,
 																							"");
 								
 								high_contrast_text_observation = issue_message_service.saveColorContrast(high_contrast_text_observation);
-								//issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
+								issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(high_contrast_text_observation);
 							}
 						}
@@ -382,24 +375,24 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							element, 
-																							AuditCategory.AESTHETICS,
-																							labels, 
+																							AuditCategory.AESTHETICS, 
+																							labels,
 																							ada_compliance, 
-																							title,
+																							title, 
 																							font_size+"",
 																							2,
-																							2, 
+																							2,
 																							"");
 								
 								high_contrast_text_observation = issue_message_service.saveColorContrast(high_contrast_text_observation);
-								//issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
+								issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
 								issue_messages.add(high_contrast_text_observation);
 							}
 						}
 					}
 					
 				//}
+					/*
 			} catch(NullPointerException e) {
 				log.warn("NPE thrown during text color contrast audit");
 				e.printStackTrace();
@@ -407,22 +400,9 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 				log.warn("element screenshot url  :: "+element.getScreenshotUrl());
 				e.printStackTrace();
 			}
+			*/
 		}
 		
-		/*
-		for(ElementState element: element_list) {
-			element_state_service.save(element);
-		}
-		*/
-		//create observation with issue messages inside
-		
-		
-		/*
-		if(!high_header_contrast.isEmpty()) {
-			ElementStateObservation high_header_contrast_observation = new ElementStateObservation(high_header_contrast, "Headers with contrast above 4.5");
-			issues.add(observation_service.save(high_header_contrast_observation));
-		}
-		*/
 		int points_earned = 0;
 		int max_points = 0;
 		for(UXIssueMessage issue_msg : issue_messages) {
@@ -431,7 +411,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 			max_points += issue_msg.getMaxPoints();
 			
 			/*
-			if(issue_msg.getScore() < 90 && issue_msg instanceof ElementStateIssueMessage) {
+			if(issue_msg.getScore() > 90 && issue_msg instanceof ElementStateIssueMessage) {
 				ElementStateIssueMessage element_issue_msg = (ElementStateIssueMessage)issue_msg;
 				List<ElementState> good_examples = audit_service.findGoodExample(AuditName.TEXT_BACKGROUND_CONTRAST, 100);
 				if(good_examples.isEmpty()) {
@@ -451,17 +431,16 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 							     AuditName.TEXT_BACKGROUND_CONTRAST,
 							     points_earned,
-							     issue_messages, 
-							     AuditLevel.PAGE,
+							     AuditLevel.PAGE, 
 							     max_points,
 							     page_state.getUrl(),
 							     why_it_matters,
-							     "Text with contrast below 4.5", 
-								 true);
+							     "Text with contrast below 4.5",
+							     true);
 		
-		return audit_service.save(audit);
-		//audit_service.addAllIssues(audit.getId(), issue_messages);
-		//return audit;
+		audit = audit_service.save(audit);
+		audit_service.addAllIssues(audit.getId(), issue_messages);
+		return audit;
 	}
 
 	/**

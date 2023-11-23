@@ -123,12 +123,11 @@ public class ColorPaletteAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 								 AuditName.COLOR_PALETTE,
 								 score.getPointsAchieved(),
-								 new HashSet<>(),
 								 AuditLevel.PAGE,
 								 score.getMaxPossiblePoints(),
 								 page_state.getUrl(),
-								 why_it_matters, 
-								 audit_description,
+								 why_it_matters,
+								 audit_description, 
 								 false);
 		
 		audit_service.save(audit);

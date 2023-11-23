@@ -16,8 +16,6 @@ import com.looksee.visualDesignAudit.models.enums.Priority;
  */
 @Node
 public class ColorContrastIssueMessage extends ElementStateIssueMessage{
-	private static Logger log = LoggerFactory.getLogger(ColorContrastIssueMessage.class);
-
 	private double contrast;
 	private String foreground_color;
 	private String background_color;
@@ -33,7 +31,6 @@ public class ColorContrastIssueMessage extends ElementStateIssueMessage{
 	 * @param contrast
 	 * @param foreground_color
 	 * @param background_color
-	 * @param element
 	 * @param category TODO
 	 * @param labels TODO
 	 * @param wcag_compliance TODO
@@ -58,12 +55,11 @@ public class ColorContrastIssueMessage extends ElementStateIssueMessage{
 			double contrast,
 			String foreground_color,
 			String background_color,
-			ElementState element, 
 			AuditCategory category, 
 			Set<String> labels, 
 			String wcag_compliance, 
-			String title,
-			String font_size, 
+			String title, 
+			String font_size,
 			int points_earned, 
 			int max_points, 
 			String recommendation
@@ -80,7 +76,6 @@ public class ColorContrastIssueMessage extends ElementStateIssueMessage{
 		setContrast(contrast);
 		setForegroundColor(foreground_color);
 		setBackgroundColor(background_color);
-		setElement(element);
 		setCategory(category);
 		setLabels(labels);
 		setType(ObservationType.COLOR_CONTRAST);

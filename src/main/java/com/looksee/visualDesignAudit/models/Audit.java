@@ -47,7 +47,6 @@ public class Audit extends LookseeObject {
 	 * @param category
 	 * @param subcategory
 	 * @param points
-	 * @param ux_issues
 	 * @param level
 	 * @param total_possible_points
 	 * @param url TODO
@@ -60,10 +59,9 @@ public class Audit extends LookseeObject {
 			AuditSubcategory subcategory,
 			AuditName name,
 			int points, 
-			Set<UXIssueMessage> ux_issues, 
 			AuditLevel level, 
-			int total_possible_points,
-			String url, 
+			int total_possible_points, 
+			String url,
 			String why_it_matters, 
 			String description, 
 			boolean is_accessibility
@@ -72,7 +70,7 @@ public class Audit extends LookseeObject {
 		
 		assert category != null;
 		assert subcategory != null;
-		assert ux_issues != null;
+		assert name != null;
 		assert level != null;
 		
 		setName(name);
@@ -80,7 +78,6 @@ public class Audit extends LookseeObject {
 		setSubcategory(subcategory);
 		setPoints(points);
 		setTotalPossiblePoints(total_possible_points);
-		setMessages(ux_issues);
 		setCreatedAt(LocalDateTime.now());
 		setLevel(level);
 		setUrl(url);
@@ -91,14 +88,14 @@ public class Audit extends LookseeObject {
 	}
 
 	public Audit clone() {
-		return new Audit(getCategory(), getSubcategory(), getName(), getPoints(), getMessages(), getLevel(), getTotalPossiblePoints(), getUrl(), getWhyItMatters(), getDescription(), isAccessiblity());
+		return new Audit(getCategory(), getSubcategory(), getName(), getPoints(), getLevel(), getTotalPossiblePoints(), getUrl(), getWhyItMatters(), getDescription(), isAccessiblity());
 	}
 
 	/**
 	 * @return string of hashCodes identifying unique fingerprint of object by the contents of the object
 	 */
 	public String generateKey() {
-		return "audit"+org.apache.commons.codec.digest.DigestUtils.sha256Hex(this.getName().toString()+this.getCategory().toString()+this.getLevel()+getPoints()+getTotalPossiblePoints()+getCreatedAt().toString());
+		return "audit"+org.apache.commons.codec.digest.DigestUtils.sha256Hex(this.getName().toString()+this.getCategory().toString()+this.getLevel().toString());
 	}
 
 	/**

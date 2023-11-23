@@ -284,12 +284,11 @@ public class FontAudit implements IExecutablePageStateAudit {
 						 AuditSubcategory.TYPOGRAPHY,
 						 AuditName.FONT,
 						 (font_size_score + score),
-						 issue_messages,
 						 AuditLevel.PAGE,
 						 (total_score + max_score),
-						 page_state.getUrl(), 
+						 page_state.getUrl(),
 						 why_it_matters, 
-						 description,
+						 description, 
 						 false);
 	}
 	

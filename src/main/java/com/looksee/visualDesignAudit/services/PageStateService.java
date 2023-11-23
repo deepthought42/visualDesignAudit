@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import com.looksee.visualDesignAudit.models.enums.AuditName;
@@ -20,16 +21,12 @@ import com.looksee.visualDesignAudit.models.PageAuditRecord;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.Screenshot;
 
-import io.github.resilience4j.retry.annotation.Retry;
-
-
 
 /**
  * Service layer object for interacting with {@link PageState} database layer
  *
  */
 @Service
-@Retry(name = "neoforj")
 public class PageStateService {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(PageStateService.class.getName());
@@ -48,6 +45,7 @@ public class PageStateService {
 	 * 
 	 * @pre page_state != null
 	 */
+	@Retryable
 	public PageState save(PageState page_state) throws Exception {
 		assert page_state != null;
 		
@@ -145,19 +143,6 @@ public class PageStateService {
 		return page_state_repo.findByUrl(url);
 	}
 
-	public boolean addElement(long page_id, long element_id) {		
-		Optional<ElementState> element_state = getElementState(page_id, element_id);
-		
-		if(element_state.isPresent()) {
-			return true;
-		}
-		return page_state_repo.addElement(page_id, element_id) != null;
-	}
-
-	private Optional<ElementState> getElementState(long page_id, long element_id) {
-		return page_state_repo.getElementState(page_id, element_id);
-	}
-
 	/**
 	 * Retrieves an {@link AuditRecord} for the page with the given id
 	 * @param id
@@ -171,16 +156,9 @@ public class PageStateService {
 	public Optional<PageState> findById(long page_id) {
 		return page_state_repo.findById(page_id);
 	}
-
-	public void updateCompositeImageUrl(Long id, String composite_img_url) {
-		page_state_repo.updateCompositeImageUrl(id, composite_img_url);
+	
+	public PageState getPageStateForAuditRecord(long page_audit_id) {
+		return page_state_repo.getPageStateForAuditRecord(page_audit_id);
 	}
 
-	public void addAllElements(long page_state_id, List<Long> element_ids) {
-		page_state_repo.addAllElements(page_state_id, element_ids);
-	}
-
-	public PageState findByDomainAudit(long domainAuditRecordId, long page_state_id) {
-		return page_state_repo.findByDomainAudit(domainAuditRecordId, page_state_id);
-	}
 }

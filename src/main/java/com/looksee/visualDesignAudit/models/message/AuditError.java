@@ -2,19 +2,18 @@ package com.looksee.visualDesignAudit.models.message;
 
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
 
-public class AuditError extends Message {
+public class AuditError extends PageAuditMessage {
 	private String error_message;
 	private AuditCategory audit_category;
 	private double progress;
 	
 	public AuditError(long accountId, 
-					  long auditRecordId, 
+					  long page_audit_id, 
 					  String error_message,
 					  AuditCategory category, 
-					  double progress, 
-					  long domainId
+					  double progress
 	) {
-		super(accountId, auditRecordId, domainId);
+		super(accountId, page_audit_id);
 		setErrorMessage(error_message);
 		setAuditCategory(category);
 		setProgress(progress);

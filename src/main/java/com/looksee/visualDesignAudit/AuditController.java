@@ -18,6 +18,7 @@ package com.looksee.visualDesignAudit;
 // [START cloudrun_pubsub_handler]
 // [START run_pubsub_handler]
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -35,18 +36,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.looksee.visualDesignAudit.models.dto.PageAuditDto;
+import com.looksee.visualDesignAudit.models.enums.ExecutionStatus;
+import com.looksee.utils.AuditUtils;
 import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
+import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
 import com.looksee.visualDesignAudit.mapper.Body;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
+import com.looksee.visualDesignAudit.models.Domain;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.visualDesignAudit.models.enums.AuditName;
+import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.services.DomainService;
+import com.looksee.visualDesignAudit.services.MessageBroadcaster;
 import com.looksee.visualDesignAudit.services.PageStateService;
 
 // PubsubController consumes a Pub/Sub message.
@@ -69,6 +79,11 @@ public class AuditController {
 	@Autowired
 	private NonTextColorContrastAudit non_text_contrast_audit_impl;
 	
+	@Autowired
+	private PubSubAuditUpdatePublisherImpl audit_update_topic;
+	
+	@Autowired
+	private MessageBroadcaster pusher;
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<String> receiveMessage(@RequestBody Body body) 
@@ -79,211 +94,114 @@ public class AuditController {
 	    String target = !data.isEmpty() ? new String(Base64.getDecoder().decode(data)) : "";
         log.warn("page audit msg received = "+target);
 
-	    ObjectMapper input_mapper = new ObjectMapper();
-	    PageAuditMessage audit_record_msg = input_mapper.readValue(target, PageAuditMessage.class);
-	    
-	    //JsonMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+	    ObjectMapper mapper = new ObjectMapper();
+	    PageAuditMessage audit_record_msg = mapper.readValue(target, PageAuditMessage.class);
+    
+    	Domain domain = domain_service.findByAuditRecord(audit_record_msg.getPageAuditId());
+		DesignSystem design_system = domain_service.getDesignSystem(domain.getId()).get();
 
-	    //try {
-		    //retrieve compliance level
-	    	/**
-		    DesignSystem design_system = null;
+		AuditRecord audit_record = audit_record_service.findById(audit_record_msg.getPageAuditId()).get();
+		PageState page = page_state_service.getPageStateForAuditRecord(audit_record.getId());
+		List<ElementState> elements = page_state_service.getElementStates(page.getId());
+		page.setElements(elements);
+
+    	Set<Audit> audits = audit_record_service.getAllAudits(audit_record.getId());
+
+		if(!auditAlreadyExists(audits, AuditName.TEXT_BACKGROUND_CONTRAST)) {
+		   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
+		   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit);
+		   	audits.add(text_contrast_audit);
+		}
 	
-			TODO: Move this code block to be performed when a new domain audit is started
-			
-		    String data_str = body.getMessage().getData();
-		    if(audit_record_msg.getDomainAuditRecordId() >= 0 ) {
-				
-				Optional<DesignSystem> design_system_opt = domain_service.getDesignSystem(audit_record_msg.getDomainId());
-				if(!design_system_opt.isPresent()) {
-					log.warn("design system couldn't be found for domain :: " + audit_record_msg.getDomain());
-					design_system = design_system_service.save( new DesignSystem() );
-					domain_service.addDesignSystem(audit_record_msg.getDomainId(), design_system.getId());
-				}
-				else {
-					design_system = design_system_opt.get();
-				}
-			}
-				     */
-		    
-	    	log.warn("retrieving design system  for domain with id: " +audit_record_msg.getDomainId());
-			DesignSystem design_system = domain_service.getDesignSystem(audit_record_msg.getDomainId()).get();
-
-			log.warn("Retreiving page audit record with id = "+audit_record_msg.getPageAuditId());
-			AuditRecord audit_record = audit_record_service.findById(audit_record_msg.getPageAuditId()).get();
-			
-			log.warn("Looking up PageState with id = "+audit_record_msg.getPageId());
-			PageState page = page_state_service.findById(audit_record_msg.getPageId()).get();
-			List<ElementState> elements = page_state_service.getElementStates(page.getId());
-			page.setElements(elements);
-		   	//check if page state already
-				//perform audit and return audit result
-		   
-		   	//Audit color_palette_audit = color_palette_auditor.execute(page);
-			//audits.add(color_palette_audit);
-			/*
-			log.warn("creating initial audit progress update");
-		   	AuditProgressUpdate audit_update = new AuditProgressUpdate(
-		   												audit_record_msg.getAccountId(),
-														audit_record_msg.getDomainAuditRecordId(),
-														0.05,
-														"Reviewing text contrast",
-														AuditCategory.AESTHETICS,
-														AuditLevel.PAGE,
-														audit_record_msg.getDomainId(), 
-														audit_record_msg.getPageAuditId());	
-		   	
-		    String audit_record_json = mapper.writeValueAsString(audit_update);
-			log.warn("audit progress update = "+audit_record_json);
-			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-			audit_update_topic.publish(audit_record_json);
-		   	*/
-			/*
-			Audit padding_audits = padding_auditor.execute(page);
-			audits.add(padding_audits);
-	
-			Audit margin_audits = margin_auditor.execute(page);
-			audits.add(margin_audits);
-			 */
-	    	Set<Audit> audits = audit_record_service.getAllAudits(audit_record.getId());
-
-			//try {
-	    		if(!auditAlreadyExists(audits, AuditName.TEXT_BACKGROUND_CONTRAST)) {    			
-				   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
-				   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit.getId());
-	    		}
-			   	/* 
-			   	if(text_contrast_audit != null) {
-	
-					AuditProgressUpdate audit_update2 = new AuditProgressUpdate(
-																audit_record_msg.getAccountId(),
-																audit_record_msg.getDomainAuditRecordId(),
-																(2.0/3.0),
-																"Reviewing non-text contrast for WCAG compliance",
-																AuditCategory.AESTHETICS,
-																AuditLevel.PAGE,
-																audit_record_msg.getDomainId(), 
-																audit_record_msg.getPageAuditId());
-					
-					audit_record_json = mapper.writeValueAsString(audit_update2);
-				
-					log.warn("audit progress update = "+audit_record_json);
-					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-					audit_record_topic.publish(audit_record_json);
-			   	}
-			   	 */
-	    		/*
-			}
-			catch(Exception e) {
-				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
-													  audit_record_msg.getDomainAuditRecordId(),
-													  "An error occurred while performing non-text audit", 
-													  AuditCategory.AESTHETICS, 
-													  (2.0/3.0),
-													  audit_record_msg.getDomainId());
-				
-				audit_record_json = mapper.writeValueAsString(audit_err);
-				log.warn("audit progress update = "+audit_record_json);
-
-				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-				pubSubErrorPublisherImpl.publish(audit_record_json);
-				e.printStackTrace();
-			}
-	    		 */
-			
-			
-//			try {
-	    		if(!auditAlreadyExists(audits, AuditName.NON_TEXT_BACKGROUND_CONTRAST)) {    			
-	
-					Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
-					audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit.getId());
-	    		}
-				/*
-				if( non_text_contrast_audit != null ) {
-				
-					AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
-																audit_record_msg.getAccountId(), 
-																audit_record_msg.getDomainAuditRecordId(),
-																1.0,
-																"Completed review of non-text contrast",
-																AuditCategory.AESTHETICS,
-																AuditLevel.PAGE, 
-																audit_record_msg.getDomainId(), 
-																audit_record_msg.getPageAuditId());
-					
-					
-					audit_record_json = mapper.writeValueAsString(audit_update3);
-					log.warn("audit progress update = "+audit_record_json);
-					//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-					audit_record_topic.publish(audit_record_json);
-				}
-			}
-			catch(Exception e) {
-				 */
-				/*
-				AuditError audit_err = new AuditError(audit_record_msg.getAccountId(), 
-													  audit_record_msg.getDomainAuditRecordId(),
-													  "An error occurred while performing non-text audit", 
-													  AuditCategory.AESTHETICS, 
-													  1.0,
-													  audit_record_msg.getDomainId());
-				
-				audit_record_json = mapper.writeValueAsString(audit_err);
-				log.warn("audit progress update = "+audit_record_json);
-
-				//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-				pubSubErrorPublisherImpl.publish(audit_record_json);
-				e.printStackTrace();
-			}
-				 */
-			
-			/*
-		}catch(Exception e) {
-			log.warn("exception caught during aesthetic audit");
-			e.printStackTrace();
-			log.warn("-------------------------------------------------------------");
-			log.warn("-------------------------------------------------------------");
-			log.warn("THERE WAS AN ISSUE DURING AESTHETICS AUDIT");
-			log.warn("-------------------------------------------------------------");
-			log.warn("-------------------------------------------------------------");
-	
-			return new ResponseEntity<String>("Error executing visual design audit for page = "+, HttpStatus.INTERNAL_SERVER_ERROR);
-*/
-			/*
-			AuditProgressUpdate audit_update3 = new AuditProgressUpdate(
-														audit_record_msg.getAccountId(),
-														audit_record_msg.getDomainAuditRecordId(),
-														1.0,
-														"Completed review of non-text contrast",
-														AuditCategory.AESTHETICS,
-														AuditLevel.PAGE, 
-														audit_record_msg.getDomainId(), 
-														audit_record_msg.getPageAuditId());
-	
-		    String audit_record_json = mapper.writeValueAsString(audit_update3);
-			log.warn("audit progress update = "+audit_record_json);
-
-			//TODO: SEND PUB SUB MESSAGE THAT AUDIT RECORD NOT FOUND WITH PAGE DATA EXTRACTION MESSAGE
-		    pubSubErrorPublisherImpl.publish(audit_record_json);
-		    */
-		//}
-
-	    /*
+						
+		if(!auditAlreadyExists(audits, AuditName.NON_TEXT_BACKGROUND_CONTRAST)) {    			
+			Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
+			audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit);
+		   	audits.add(non_text_contrast_audit);
+		}
+    		
+	    		
 	    AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
-																	audit_record_msg.getDomainAuditRecordId(),
+																	audit_record_msg.getPageAuditId(),
 																	1.0, 
 																	"Content Audit Compelete!",
 																	AuditCategory.CONTENT, 
-																	AuditLevel.PAGE, 
-																	audit_record_msg.getDomainId(), 
-																	audit_record_msg.getPageAuditId());
+																	AuditLevel.PAGE);
 
 		String audit_record_json = mapper.writeValueAsString(audit_update);
 		
 		audit_update_topic.publish(audit_record_json);
-		*/
-	    
+
+		PageAuditDto audit_dto = builPagedAuditdDto(audit_record_msg.getPageAuditId(), page.getUrl());
+		pusher.sendAuditUpdate(Long.toString( audit_record_msg.getAccountId() ), audit_dto);
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
+	}
+	
+	/**
+	 * Creates an {@linkplain PageAuditDto} using page audit ID and the provided page_url
+	 * @param pageAuditId
+	 * @param page_url
+	 * @return
+	 */
+	private PageAuditDto builPagedAuditdDto(long pageAuditId, String page_url) {
+		//get all audits
+		Set<Audit> audits = audit_record_service.getAllAudits(pageAuditId);
+		Set<AuditName> audit_labels = new HashSet<AuditName>();
+		audit_labels.add(AuditName.TEXT_BACKGROUND_CONTRAST);
+		audit_labels.add(AuditName.NON_TEXT_BACKGROUND_CONTRAST);
+		audit_labels.add(AuditName.TITLES);
+		audit_labels.add(AuditName.IMAGE_COPYRIGHT);
+		audit_labels.add(AuditName.IMAGE_POLICY);
+		audit_labels.add(AuditName.LINKS);
+		audit_labels.add(AuditName.ALT_TEXT);
+		audit_labels.add(AuditName.METADATA);
+		audit_labels.add(AuditName.READING_COMPLEXITY);
+		audit_labels.add(AuditName.PARAGRAPHING);
+		audit_labels.add(AuditName.ENCRYPTED);
+		//count audits for each category
+		//calculate content score
+		//calculate aesthetics score
+		//calculate information architecture score
+		double visual_design_progress = AuditUtils.calculateProgress(AuditCategory.AESTHETICS, 
+																 1, 
+																 audits, 
+																 AuditUtils.getAuditLabels(AuditCategory.AESTHETICS, audit_labels));
+		double content_progress = AuditUtils.calculateProgress(AuditCategory.CONTENT, 
+																1, 
+																audits, 
+																audit_labels);
+		double info_architecture_progress = AuditUtils.calculateProgress(AuditCategory.INFORMATION_ARCHITECTURE, 
+																		1, 
+																		audits, 
+																		audit_labels);
+
+		double content_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.CONTENT);
+		double info_architecture_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.INFORMATION_ARCHITECTURE);
+		double visual_design_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.AESTHETICS);
+		double a11y_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.ACCESSIBILITY);
+
+		double data_extraction_progress = 1;
+		String message = "";
+		ExecutionStatus execution_status = ExecutionStatus.UNKNOWN;
+		if(visual_design_progress < 1 || content_progress < 1 || visual_design_progress < 1) {
+			execution_status = ExecutionStatus.IN_PROGRESS;
+		}
+		else {
+			execution_status = ExecutionStatus.COMPLETE;
+		}
+		
+		return new PageAuditDto(pageAuditId, 
+								page_url, 
+								content_score, 
+								content_progress, 
+								info_architecture_score, 
+								info_architecture_progress, 
+								a11y_score,
+								visual_design_score,
+								visual_design_progress,
+								data_extraction_progress, 
+								message, 
+								execution_status);
 	}
 	
 	/**

@@ -240,7 +240,6 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 																	Priority.MEDIUM, 
 																	description, 
 																	recommendation, 
-																	element,
 																	AuditCategory.AESTHETICS,
 																	labels,
 																	ada_compliance,
@@ -258,7 +257,6 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 																	Priority.MEDIUM, 
 																	description, 
 																	recommendation, 
-																	element,
 																	AuditCategory.AESTHETICS,
 																	labels,
 																	ada_compliance,
@@ -282,12 +280,11 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 						 AuditSubcategory.TYPOGRAPHY,
 						 AuditName.TYPEFACES,
 						 score,
-						 issue_messages,
 						 AuditLevel.PAGE,
 						 total_possible_points,
 						 page_state.getUrl(),
 						 why_it_matters,
-						 description, 
+						 description,
 						 false);
 	}
 }
