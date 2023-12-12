@@ -18,7 +18,6 @@ package com.looksee.visualDesignAudit;
 // [START cloudrun_pubsub_handler]
 // [START run_pubsub_handler]
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -36,9 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.looksee.visualDesignAudit.models.dto.PageAuditDto;
-import com.looksee.visualDesignAudit.models.enums.ExecutionStatus;
-import com.looksee.utils.AuditUtils;
 import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
 import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
@@ -49,14 +45,11 @@ import com.looksee.visualDesignAudit.models.DesignSystem;
 import com.looksee.visualDesignAudit.models.Domain;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
 import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.services.DomainService;
-import com.looksee.visualDesignAudit.services.MessageBroadcaster;
 import com.looksee.visualDesignAudit.services.PageStateService;
 
 // PubsubController consumes a Pub/Sub message.
@@ -82,9 +75,6 @@ public class AuditController {
 	@Autowired
 	private PubSubAuditUpdatePublisherImpl audit_update_topic;
 	
-	@Autowired
-	private MessageBroadcaster pusher;
-	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<String> receiveMessage(@RequestBody Body body) 
 			throws JsonMappingException, JsonProcessingException, ExecutionException, InterruptedException 
@@ -98,7 +88,11 @@ public class AuditController {
 	    PageAuditMessage audit_record_msg = mapper.readValue(target, PageAuditMessage.class);
     
     	Domain domain = domain_service.findByAuditRecord(audit_record_msg.getPageAuditId());
-		DesignSystem design_system = domain_service.getDesignSystem(domain.getId()).get();
+    	
+		DesignSystem design_system = buildDefaultDesignSystem();
+		if(domain != null) {
+			design_system = domain_service.getDesignSystem(domain.getId()).get();
+		}
 
 		AuditRecord audit_record = audit_record_service.findById(audit_record_msg.getPageAuditId()).get();
 		PageState page = page_state_service.getPageStateForAuditRecord(audit_record.getId());
@@ -123,87 +117,22 @@ public class AuditController {
 	    		
 	    AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
 																	audit_record_msg.getPageAuditId(),
-																	1.0, 
-																	"Content Audit Compelete!",
-																	AuditCategory.CONTENT, 
-																	AuditLevel.PAGE);
+																	"Completed visual design audit!");
 
 		String audit_record_json = mapper.writeValueAsString(audit_update);
-		
 		audit_update_topic.publish(audit_record_json);
 
+		/*
 		PageAuditDto audit_dto = builPagedAuditdDto(audit_record_msg.getPageAuditId(), page.getUrl());
 		pusher.sendAuditUpdate(Long.toString( audit_record_msg.getAccountId() ), audit_dto);
+		*/
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
 	}
 	
-	/**
-	 * Creates an {@linkplain PageAuditDto} using page audit ID and the provided page_url
-	 * @param pageAuditId
-	 * @param page_url
-	 * @return
-	 */
-	private PageAuditDto builPagedAuditdDto(long pageAuditId, String page_url) {
-		//get all audits
-		Set<Audit> audits = audit_record_service.getAllAudits(pageAuditId);
-		Set<AuditName> audit_labels = new HashSet<AuditName>();
-		audit_labels.add(AuditName.TEXT_BACKGROUND_CONTRAST);
-		audit_labels.add(AuditName.NON_TEXT_BACKGROUND_CONTRAST);
-		audit_labels.add(AuditName.TITLES);
-		audit_labels.add(AuditName.IMAGE_COPYRIGHT);
-		audit_labels.add(AuditName.IMAGE_POLICY);
-		audit_labels.add(AuditName.LINKS);
-		audit_labels.add(AuditName.ALT_TEXT);
-		audit_labels.add(AuditName.METADATA);
-		audit_labels.add(AuditName.READING_COMPLEXITY);
-		audit_labels.add(AuditName.PARAGRAPHING);
-		audit_labels.add(AuditName.ENCRYPTED);
-		//count audits for each category
-		//calculate content score
-		//calculate aesthetics score
-		//calculate information architecture score
-		double visual_design_progress = AuditUtils.calculateProgress(AuditCategory.AESTHETICS, 
-																 1, 
-																 audits, 
-																 AuditUtils.getAuditLabels(AuditCategory.AESTHETICS, audit_labels));
-		double content_progress = AuditUtils.calculateProgress(AuditCategory.CONTENT, 
-																1, 
-																audits, 
-																audit_labels);
-		double info_architecture_progress = AuditUtils.calculateProgress(AuditCategory.INFORMATION_ARCHITECTURE, 
-																		1, 
-																		audits, 
-																		audit_labels);
-
-		double content_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.CONTENT);
-		double info_architecture_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.INFORMATION_ARCHITECTURE);
-		double visual_design_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.AESTHETICS);
-		double a11y_score = AuditUtils.calculateScoreByCategory(audits, AuditCategory.ACCESSIBILITY);
-
-		double data_extraction_progress = 1;
-		String message = "";
-		ExecutionStatus execution_status = ExecutionStatus.UNKNOWN;
-		if(visual_design_progress < 1 || content_progress < 1 || visual_design_progress < 1) {
-			execution_status = ExecutionStatus.IN_PROGRESS;
-		}
-		else {
-			execution_status = ExecutionStatus.COMPLETE;
-		}
-		
-		return new PageAuditDto(pageAuditId, 
-								page_url, 
-								content_score, 
-								content_progress, 
-								info_architecture_score, 
-								info_architecture_progress, 
-								a11y_score,
-								visual_design_score,
-								visual_design_progress,
-								data_extraction_progress, 
-								message, 
-								execution_status);
+	private DesignSystem buildDefaultDesignSystem() {
+		return new DesignSystem();
 	}
-	
+
 	/**
 	 * Checks if the any of the provided {@link Audit audits} have a name that matches 
 	 * 		the provided {@linkplain AuditName}
