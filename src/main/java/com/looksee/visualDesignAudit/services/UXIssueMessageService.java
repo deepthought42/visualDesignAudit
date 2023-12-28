@@ -1,6 +1,7 @@
 package com.looksee.visualDesignAudit.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import com.looksee.visualDesignAudit.models.repository.UXIssueMessageRepository;
 import com.looksee.visualDesignAudit.models.ColorContrastIssueMessage;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
 
 @Service
 public class UXIssueMessageService {
@@ -69,5 +71,14 @@ public class UXIssueMessageService {
 
 	public void addPage(long issue_id, long page_id) {
 		issue_message_repo.addPage(issue_id, page_id);
+	}
+
+	public Set<UXIssueMessage> findByNameForElement(AuditName audit_name, long element_id) {
+		return issue_message_repo.findByNameForElement(audit_name, element_id);
+	}
+
+	public boolean hasAuditBeenExecuted(AuditName audit_name, long element_id) {
+		int count = issue_message_repo.getNumberOfUXIssuesForElement(audit_name, element_id);
+		return count > 0;
 	}
 }

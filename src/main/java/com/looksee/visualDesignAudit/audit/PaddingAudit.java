@@ -318,7 +318,7 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 																	ada_compliance, 
 																	title,
 																	1,
-																	1);
+																	1, null);
 					issue_messages.add(issue_message);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -335,7 +335,7 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 																	ada_compliance, 
 																	title,
 																	0,
-																	1);
+																	1, null);
 					issue_messages.add(issue_message);
 				}
 				max_points++;
@@ -408,7 +408,7 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 							ada_compliance,
 							title,
 							0,
-							1);
+							1, null);
 					issue_messages.add(issue_message);
 				}
 				else {
@@ -424,7 +424,7 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 							ada_compliance,
 							title,
 							0, 
-							1);
+							1, null);
 					issue_messages.add(issue_message);
 				}
 			}

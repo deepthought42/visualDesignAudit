@@ -273,13 +273,14 @@ public class FontAudit implements IExecutablePageStateAudit {
 						1,
 						1,
 						recommendation);
+				
+				issue_messages.add(ux_issue);
 				font_size_score++;
 			}
 			total_score++;
 		}
 		String description = "";
 		
-		//log.warn("FONT AUDIT SCORE   ::   "+(font_size_score + score) +" / " +(total_score + max_score));
 		return new Audit(AuditCategory.AESTHETICS,
 						 AuditSubcategory.TYPOGRAPHY,
 						 AuditName.FONT,

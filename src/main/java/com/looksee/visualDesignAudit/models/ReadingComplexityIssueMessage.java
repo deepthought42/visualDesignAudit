@@ -36,7 +36,7 @@ public class ReadingComplexityIssueMessage extends ElementStateIssueMessage {
 				wcag_compliance,
 				title,
 				points_awarded,
-				max_points);
+				max_points, null);
 		
 		setEaseOfReadingScore(ease_of_reading_score);
 	}

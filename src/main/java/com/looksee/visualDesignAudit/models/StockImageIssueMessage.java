@@ -37,7 +37,7 @@ public class StockImageIssueMessage extends ElementStateIssueMessage {
 				wcag_compliance,
 				title,
 				points_awarded,
-				max_points);
+				max_points, null);
 		
 		setStockImage(is_stock_image);
 	}

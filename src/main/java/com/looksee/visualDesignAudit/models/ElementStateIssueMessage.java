@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.enums.ObservationType;
 import com.looksee.visualDesignAudit.models.enums.Priority;
 
@@ -34,7 +35,8 @@ public class ElementStateIssueMessage extends UXIssueMessage {
 			String wcag_compliance, 
 			String title,
 			int points_awarded, 
-			int max_points
+			int max_points, 
+			AuditName audit_name
 	) {
 		super(	priority, 
 				description, 

@@ -104,7 +104,7 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 																	ada_compliance,
 																	title,
 																	0,
-																	1);
+																	1, null);
 					
 					issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), image_element.getId());
@@ -123,7 +123,7 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 																	ada_compliance,
 																	title,
 																	1,
-																	1);
+																	1, null);
 
 					issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), image_element.getId());
@@ -143,7 +143,7 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 																ada_compliance,
 																title,
 																0,
-																1);
+																1, null);
 				
 				issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 				issue_message_service.addElement(issue_message.getId(), image_element.getId());

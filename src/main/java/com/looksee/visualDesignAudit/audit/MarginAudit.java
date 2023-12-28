@@ -180,7 +180,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																		"", 
 																		title,
 																		1, 
-																		1);
+																		1, null);
 					issue_messages.add(issue_message);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -199,7 +199,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																		"", 
 																		title,
 																		0, 
-																		1);
+																		1, null);
 					issue_messages.add(issue_message);
 				}
 				max_points++;
@@ -261,7 +261,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 							"", 
 							title,
 							1,
-							1);
+							1, null);
 					element_issues.add(element_issue);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -277,7 +277,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 							null, 
 							title,
 							0,
-							1);
+							1, null);
 					element_issues.add(element_issue);
 				}
 				max_points++;
@@ -363,7 +363,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																	"", 
 																	title, 
 																	0,
-																	1);
+																	1, null);
 					element_issues.add(issue_message);
 				}
 				else {
@@ -379,7 +379,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																	"", 
 																	title, 
 																	1,
-																	1);
+																	1, null);
 					element_issues.add(issue_message);
 				}
 			}
@@ -503,7 +503,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																	"", 
 																	title,
 																	0,
-																	1);
+																	1, null);
 					element_issues.add(issue_message);
 				}
 				else {
@@ -520,7 +520,7 @@ public class MarginAudit implements IExecutablePageStateAudit {
 																	"", 
 																	title,
 																	1,
-																	1);
+																	1, null);
 					element_issues.add(issue_message);
 				}
 				max_score += 3;

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.core.schema.Node;
 
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.enums.ObservationType;
 import com.looksee.visualDesignAudit.models.enums.Priority;
 

@@ -245,7 +245,7 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 																	ada_compliance,
 																	title,
 																	1,
-																	1);
+																	1, null);
 				no_fallback_font.add(issue_message);
 			}
 			else {
@@ -262,7 +262,7 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 																	ada_compliance,
 																	title,
 																	0,
-																	1);
+																	1, null);
 				no_fallback_font.add(issue_message);
 			}
 			
