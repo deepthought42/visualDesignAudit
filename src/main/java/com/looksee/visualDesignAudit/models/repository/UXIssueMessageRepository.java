@@ -34,5 +34,5 @@ public interface UXIssueMessageRepository extends Neo4jRepository<UXIssueMessage
 	public Set<UXIssueMessage> findByNameForElement(@Param("name") AuditName name, @Param("element_id") long element_id);
 
 	@Query("MATCH w=(a:Audit)-[]->(ux:UXIssueMessage) MATCH y=(ux:UXIssueMessage)-[:FOR]->(e:ElementState) WHERE id(e)=$element_id AND a.name=$name RETURN COUNT(ux)")
-	public int getNumberOfUXIssuesForElement(AuditName audit_name, long element_id);
+	public int getNumberOfUXIssuesForElement(@Param("name") AuditName audit_name, @Param("element_id") long element_id);
 }
