@@ -45,6 +45,8 @@ import com.looksee.visualDesignAudit.models.DesignSystem;
 import com.looksee.visualDesignAudit.models.Domain;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.PageState;
+import com.looksee.visualDesignAudit.models.enums.AuditCategory;
+import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
 import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
@@ -99,25 +101,26 @@ public class AuditController {
 		List<ElementState> elements = page_state_service.getElementStates(page.getId());
 		page.setElements(elements);
 
-    	Set<Audit> audits = audit_record_service.getAllAudits(audit_record.getId());
+		Set<Audit> audits = audit_record_service.getAllAudits(audit_record.getId());
 
 		if(!auditAlreadyExists(audits, AuditName.TEXT_BACKGROUND_CONTRAST)) {
 		   	Audit text_contrast_audit = text_contrast_audit_impl.execute(page, audit_record, design_system);
 		   	audit_record_service.addAudit(audit_record_msg.getPageAuditId(), text_contrast_audit);
 		   	audits.add(text_contrast_audit);
 		}
-	
-						
-		if(!auditAlreadyExists(audits, AuditName.NON_TEXT_BACKGROUND_CONTRAST)) {    			
+
+		if(!auditAlreadyExists(audits, AuditName.NON_TEXT_BACKGROUND_CONTRAST)) {
 			Audit non_text_contrast_audit = non_text_contrast_audit_impl.execute(page, audit_record, design_system);
 			audit_record_service.addAudit(audit_record_msg.getPageAuditId(), non_text_contrast_audit);
-		   	audits.add(non_text_contrast_audit);
+			audits.add(non_text_contrast_audit);
 		}
-    		
-	    		
-	    AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
-																	audit_record_msg.getPageAuditId(),
-																	"Completed visual design audit!");
+
+		AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
+																	1.0, 
+																	"Completed visual design audit!",
+																	AuditCategory.CONTENT, 
+																	AuditLevel.PAGE, 
+																	audit_record_msg.getPageAuditId());
 
 		String audit_record_json = mapper.writeValueAsString(audit_update);
 		audit_update_topic.publish(audit_record_json);

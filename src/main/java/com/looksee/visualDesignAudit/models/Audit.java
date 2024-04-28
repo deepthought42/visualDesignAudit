@@ -11,7 +11,6 @@ import com.looksee.visualDesignAudit.models.enums.AuditLevel;
 import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
 
-
 /**
  * Defines the globally required fields for all audits
  */

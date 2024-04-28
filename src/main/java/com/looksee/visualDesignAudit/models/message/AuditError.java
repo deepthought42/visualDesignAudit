@@ -2,45 +2,36 @@ package com.looksee.visualDesignAudit.models.message;
 
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
 
-public class AuditError extends PageAuditMessage {
-	private String error_message;
-	private AuditCategory audit_category;
+import lombok.Getter;
+import lombok.Setter;
+
+public class AuditError extends Message {
+	@Getter
+	@Setter
+	private String errorMessage;
+	
+	@Getter
+	@Setter
+	private AuditCategory auditCategory;
+	
+	@Getter
+	@Setter
 	private double progress;
+
+	@Getter
+	@Setter
+	private long auditRecordId;
 	
 	public AuditError(long accountId, 
-					  long page_audit_id, 
+					  long auditRecordId, 
 					  String error_message,
 					  AuditCategory category, 
-					  double progress
+					  double progress, 
+					  long domainId
 	) {
-		super(accountId, page_audit_id);
+		super(accountId);
 		setErrorMessage(error_message);
 		setAuditCategory(category);
 		setProgress(progress);
-	}
-
-	public String getErrorMessage() {
-		return error_message;
-	}
-
-	public void setErrorMessage(String error_message) {
-		this.error_message = error_message;
-	}
-
-	public AuditCategory getAuditCategory() {
-		return audit_category;
-	}
-
-	public void setAuditCategory(AuditCategory audit_category) {
-		this.audit_category = audit_category;
-	}
-
-	public double getProgress() {
-		return progress;
-	}
-
-	public void setProgress(double progress) {
-		this.progress = progress;
-	}
-
-}
+		setAuditRecordId(auditRecordId);
+	}}

@@ -44,10 +44,10 @@ public interface AuditRepository extends Neo4jRepository<Audit, Long> {
 	@Query("MATCH (:AuditRecord{key:$audit_record_key})-[:HAS]->(a:Audit{key:$audit_key}) RETURN a")
 	public Optional<Audit> getAuditForAuditRecord(@Param("audit_record_key") String audit_record_key, @Param("audit_key") String audit_key);
 
-	@Query("MATCH (ar:AuditRecord)-[:HAS]->(a:Audit{key:$audit_key}) WHERE id(ar)=$audit_record_id RETURN a")
+	@Query("MATCH (ar:AuditRecord)-[:HAS]->(a:Audit{key:$audit_key}) WHERE id(ar)=$audit_record_id RETURN a LIMIT 1")
 	public Optional<Audit> getAuditForAuditRecord(@Param("audit_record_id") long audit_record_id, @Param("audit_key") String audit_key);
 
-	@Query("MATCH (ar:PageAuditRecord)-[:HAS]->(a:Audit) WHERE id(ar)=$audit_record_id AND id(a)=$audit_id RETURN a")
+	@Query("MATCH (ar:PageAuditRecord)-[:HAS]->(a:Audit) WHERE id(ar)=$audit_record_id AND id(a)=$audit_id RETURN a LIMIT 1")
 	public Optional<Audit> getAuditForAuditRecord(@Param("audit_record_id") long audit_record_id, @Param("audit_id") long audit_id);
 
 	@Query("MATCH (ar:PageAuditRecord)-[:HAS]->(audit:Audit) WHERE id(ar)=$audit_record_id RETURN audit")

@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import com.looksee.visualDesignAudit.models.repository.AuditRecordRepository;
-import com.looksee.visualDesignAudit.models.repository.AuditRepository;
-import com.looksee.visualDesignAudit.services.AuditRecordService;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.AuditRecord;
 import com.looksee.visualDesignAudit.models.DesignSystem;
@@ -22,6 +19,8 @@ import com.looksee.visualDesignAudit.models.Label;
 import com.looksee.visualDesignAudit.models.PageAuditRecord;
 import com.looksee.visualDesignAudit.models.PageState;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
+import com.looksee.visualDesignAudit.models.repository.AuditRecordRepository;
+import com.looksee.visualDesignAudit.models.repository.AuditRepository;
 
 /**
  * Contains business logic for interacting with and managing audits
@@ -70,6 +69,11 @@ public class AuditRecordService {
 		}
 	}
 	
+	/**
+	 * Add {@link Audit} to {@link AuditRecord}
+	 * @param audit_record_id
+	 * @param audit
+	 */
 	public void addAudit(long audit_record_id, Audit audit) {
 		//check if audit already exists for page state
 		Optional<Audit> audit_opt = audit_repo.getAuditForAuditRecord(audit_record_id, audit.getKey());
@@ -85,7 +89,7 @@ public class AuditRecordService {
 		audit_record_repo.addAudit(audit_record_id, audit_id);
 	}
 	
-	public Set<Audit> getAllAuditsAndIssues(long audit_id) {		
+	public Set<Audit> getAllAuditsAndIssues(long audit_id) {
 		return audit_repo.getAllAuditsForPageAuditRecord(audit_id);
 	}
 	
