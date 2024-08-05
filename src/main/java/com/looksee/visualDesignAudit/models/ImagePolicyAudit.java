@@ -177,6 +177,6 @@ public class ImagePolicyAudit implements IExecutablePageStateAudit {
 				}
 			}
 		}
-		return new Score(points_earned, max_points, issue_messages);	
+		return new Score(points_earned, max_points, issue_messages);
 	}
 }

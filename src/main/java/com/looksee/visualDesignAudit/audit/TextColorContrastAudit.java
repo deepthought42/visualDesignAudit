@@ -395,6 +395,7 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 						//if element does NOT have issue associated, then save issue and associate with element
 						if(!was_executed) {
 							high_contrast_text_observation = issue_message_service.saveColorContrast(high_contrast_text_observation);
+							log.warn("high contrast text issue = "+high_contrast_text_observation);
 							issue_message_service.addElement(high_contrast_text_observation.getId(), element.getId());
 							issue_messages.add(high_contrast_text_observation);		
 						}

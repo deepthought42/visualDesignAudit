@@ -9,14 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import com.looksee.visualDesignAudit.models.repository.ColorContrastIssueMessageRepository;
-import com.looksee.visualDesignAudit.models.repository.UXIssueMessageRepository;
 import com.looksee.visualDesignAudit.models.ColorContrastIssueMessage;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
 import com.looksee.visualDesignAudit.models.enums.AuditName;
+import com.looksee.visualDesignAudit.models.repository.ColorContrastIssueMessageRepository;
+import com.looksee.visualDesignAudit.models.repository.UXIssueMessageRepository;
+
+import io.github.resilience4j.retry.annotation.Retry;
+import lombok.Synchronized;
 
 @Service
+@Retry(name="neoforj")
 public class UXIssueMessageService {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(UXIssueMessageService.class);
@@ -27,10 +31,12 @@ public class UXIssueMessageService {
 	@Autowired
 	private ColorContrastIssueMessageRepository contrast_issue_message_repo;
 	
+	@Retryable
 	public UXIssueMessage save(UXIssueMessage ux_issue) {
 		return issue_message_repo.save(ux_issue);
 	}
 	
+	@Retryable
 	public ColorContrastIssueMessage saveColorContrast(ColorContrastIssueMessage ux_issue) {
 		return contrast_issue_message_repo.save(ux_issue);
 	}
@@ -65,6 +71,7 @@ public class UXIssueMessageService {
 	}
 
 	@Retryable
+	@Synchronized
 	public void addElement(long issue_id, long element_id) {
 		issue_message_repo.addElement(issue_id, element_id);
 	}

@@ -1,10 +1,8 @@
 package com.looksee.visualDesignAudit.services;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,19 +15,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.ObservationType;
-import com.looksee.visualDesignAudit.models.repository.AuditRepository;
 import com.looksee.visualDesignAudit.models.Audit;
 import com.looksee.visualDesignAudit.models.ElementState;
 import com.looksee.visualDesignAudit.models.ElementStateIssueMessage;
 import com.looksee.visualDesignAudit.models.ImageElementState;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.PageStateAudits;
 import com.looksee.visualDesignAudit.models.SimpleElement;
-import com.looksee.visualDesignAudit.models.SimplePage;
 import com.looksee.visualDesignAudit.models.UXIssueMessage;
+import com.looksee.visualDesignAudit.models.enums.AuditName;
+import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
+import com.looksee.visualDesignAudit.models.enums.ObservationType;
+import com.looksee.visualDesignAudit.models.repository.AuditRepository;
 
 import io.github.resilience4j.retry.annotation.Retry;
 
@@ -103,124 +98,6 @@ public class AuditService {
 							.collect(Collectors.toSet());
 	}
 	
-	/**
-	 * using a list of audits, sorts the list by page and packages results into list 
-	 * 	of {@linkplain PageStateAudits}
-	 * 
-	 * @param audits
-	 * @return
-	 */
-	public List<PageStateAudits> groupAuditsByPage(Set<Audit> audits) {
-		Map<String, Set<Audit>> audit_url_map = new HashMap<>();
-		
-		for(Audit audit : audits) {
-			//if url of pagestate already exists 
-			if(audit_url_map.containsKey(audit.getUrl())) {
-				audit_url_map.get(audit.getUrl()).add(audit);
-			}
-			else {
-				Set<Audit> page_audits = new HashSet<>();
-				page_audits.add(audit);
-				
-				audit_url_map.put(audit.getUrl(), page_audits);
-			}
-		}
-		
-		List<PageStateAudits> page_audits = new ArrayList<>();
-		for(String url : audit_url_map.keySet()) {
-			//load page state by url
-			PageState page_state = page_state_service.findByUrl(url);
-			SimplePage simple_page = new SimplePage(
-											page_state.getUrl(), 
-											page_state.getViewportScreenshotUrl(), 
-											page_state.getFullPageScreenshotUrlOnload(), 
-											page_state.getFullPageScreenshotUrlComposite(), 
-											page_state.getFullPageWidth(),
-											page_state.getFullPageHeight(),
-											page_state.getSrc(), 
-											page_state.getKey(), page_state.getId());
-			PageStateAudits page_state_audits = new PageStateAudits(simple_page, audit_url_map.get(url));
-			page_audits.add( page_state_audits ) ;
-		}
-		
-		return page_audits;
-	}
-	
-	
-	/**
-	 * Generates a {@linkplain Map} with element keys for it's keys and a set of issue keys associated 
-	 * 	with each element as the values
-	 * 
-	 * @param audits
-	 * @param page_url
-	 * @return
-	 * @throws MalformedURLException
-	 */
-	public Map<String, Set<String>> generateElementIssuesMap(Set<Audit> audits)  {		
-		Map<String, Set<String>> element_issues = new HashMap<>();
-				
-		for(Audit audit : audits) {	
-			Set<UXIssueMessage> issues = getIssues(audit.getId());
-
-			for(UXIssueMessage issue_msg : issues ) {
-				
-				ElementState element = ux_issue_service.getElement(issue_msg.getId());
-				if(element == null) {
-					continue;
-				}
-				
-				//associate issue with element
-				if(!element_issues.containsKey(element.getKey())) {	
-					Set<String> issue_keys = new HashSet<>();
-					issue_keys.add(issue_msg.getKey());
-					
-					element_issues.put(element.getKey(), issue_keys);
-				}
-				else {
-					element_issues.get(element.getKey()).add(issue_msg.getKey());
-				}
-
-			}
-		}
-
-		return element_issues;
-	}
-	
-	/**
-	 * WIP
-	 * 
-	 * @param audits
-	 * @param page_url
-	 * @return
-	 * @throws MalformedURLException
-	 */
-	public Map<String, String> generateIssueElementMap(Set<Audit> audits)  {		
-		Map<String, String> issue_element_map = new HashMap<>();
-				
-		for(Audit audit : audits) {	
-			Set<UXIssueMessage> issues = getIssues(audit.getId());
-
-			for(UXIssueMessage issue_msg : issues ) {
-				if(issue_msg.getType().equals(ObservationType.COLOR_CONTRAST) || 
-						issue_msg.getType().equals(ObservationType.ELEMENT) ) {
-					ElementState element = ux_issue_service.getElement(issue_msg.getId());
-					if(element == null) {
-						log.warn("element issue map:: element is null for issue msg ... "+issue_msg.getId());
-						continue;
-					}
-					
-					//associate issue with element
-					issue_element_map.put(issue_msg.getKey(), element.getKey());
-				}
-				else {
-					// DO NOTHING FOR NOW
-				}
-			
-			}
-		}
-
-		return issue_element_map;
-	}
 
 	public UXIssueMessage addIssue(
 			String key, 

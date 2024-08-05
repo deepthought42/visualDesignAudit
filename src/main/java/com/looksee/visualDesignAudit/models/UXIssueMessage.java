@@ -1,5 +1,6 @@
 package com.looksee.visualDesignAudit.models;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.core.schema.Node;
 
 import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
 import com.looksee.visualDesignAudit.models.enums.ObservationType;
 import com.looksee.visualDesignAudit.models.enums.Priority;
 
@@ -29,7 +29,9 @@ public class UXIssueMessage extends LookseeObject {
 	private int max_points;
 	private int score;
 
-	public UXIssueMessage() {}
+	public UXIssueMessage() {
+		setLabels(new HashSet<>());
+	}
 	
 	public UXIssueMessage(
 			Priority priority,
