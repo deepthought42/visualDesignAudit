@@ -1,0 +1,17 @@
+# 1.0.0 (2025-03-27)
+
+
+### Bug Fixes
+
+* added releaserc config ([bf8ef26](https://github.com/deepthought42/visualDesignAudit/commit/bf8ef262c197e948fa6c5a288991c719b0f7f78e))
+* changed file to include target folder ([d2321f9](https://github.com/deepthought42/visualDesignAudit/commit/d2321f9c7763476d7a01edf7680d7a13d5d24e39))
+* cleanup gitignore file ([56232d0](https://github.com/deepthought42/visualDesignAudit/commit/56232d03827b8ffe1b2288ec943ac5f6ec38781c))
+* corrected filename in github release ([8d408c5](https://github.com/deepthought42/visualDesignAudit/commit/8d408c5200720b4a699c2e04a931d53d0ca3ade1))
+* fixed docker repo name ([2491cef](https://github.com/deepthought42/visualDesignAudit/commit/2491cef0426e48cf19f61a32f85b0bfba44b53c0))
+* fixed package name ([9986db8](https://github.com/deepthought42/visualDesignAudit/commit/9986db802b56c09097a707b16d1b70b472e924d9))
+* removed npm install ([d312ac5](https://github.com/deepthought42/visualDesignAudit/commit/d312ac5e548936196ed0b11258a7811d23cd6d5f))
+
+
+### Features
+
+* github actions ([a3c83ef](https://github.com/deepthought42/visualDesignAudit/commit/a3c83ef1554a7959901d2ec141d9fa60de3be611))
