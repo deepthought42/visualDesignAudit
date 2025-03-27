@@ -1,4 +1,4 @@
-node_modules/*
+/node_modules
 
 GCP-MyFirstProject-1c31159db52c.json
 gmail_credentials.json
