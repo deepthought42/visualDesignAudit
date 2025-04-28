@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.2...v1.0.3) (2025-04-28)
+
+
+### Bug Fixes
+
+* removed unused pusher code ([8281465](https://github.com/deepthought42/visualDesignAudit/commit/828146516da627e3cf35db3a7650debed659d312))
+
 ## [1.0.2](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.1...v1.0.2) (2025-04-28)
 
 
