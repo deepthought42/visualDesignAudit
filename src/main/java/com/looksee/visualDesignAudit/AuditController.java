@@ -125,10 +125,6 @@ public class AuditController {
 		String audit_record_json = mapper.writeValueAsString(audit_update);
 		audit_update_topic.publish(audit_record_json);
 
-		/*
-		PageAuditDto audit_dto = builPagedAuditdDto(audit_record_msg.getPageAuditId(), page.getUrl());
-		pusher.sendAuditUpdate(Long.toString( audit_record_msg.getAccountId() ), audit_dto);
-		*/
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
 	}
 	
