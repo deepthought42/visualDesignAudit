@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.1...v1.0.2) (2025-04-28)
+
+
+### Bug Fixes
+
+* removed unused properties and config files ([1000319](https://github.com/deepthought42/visualDesignAudit/commit/100031919f33ae737d1dc0ba73bcf5b2d7ee8d39))
+
 ## [1.0.1](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.0...v1.0.1) (2025-03-27)
 
 
