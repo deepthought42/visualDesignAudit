@@ -36,7 +36,7 @@ sudo docker push us-central1-docker.pkg.dev/cosmic-envoy-280619/visual-design-au
 
 ## Adding Secrets to GCP and Setting Required Values
 
-Before deploying, you need to add certain secrets to Google Cloud Secret Manager and set the required values based on your application.properties and auth0.properties files.
+Before deploying, you need to add certain secrets to Google Cloud Secret Manager and set the required values based on your application.properties files.
 
 ### Adding Secrets to GCP Secret Manager
 
@@ -48,13 +48,10 @@ Before deploying, you need to add certain secrets to Google Cloud Secret Manager
    - `SPRING_DATASOURCE_URL`
    - `SPRING_DATASOURCE_USERNAME`
    - `SPRING_DATASOURCE_PASSWORD`
-   - `AUTH0_CLIENT_ID`
-   - `AUTH0_CLIENT_SECRET`
-   - `AUTH0_DOMAIN`
    - `GCP_PROJECT_ID`
    - `GCP_BUCKET_NAME`
 
-5. For each secret, provide a name and the corresponding value from your application.properties or auth0.properties file.
+5. For each secret, provide a name and the corresponding value from your application.properties file.
 
 ### Required Values
 
@@ -66,11 +63,6 @@ Set the following values in your secrets:
    - `SPRING_DATASOURCE_PASSWORD`: Your database password
    - `GCP_PROJECT_ID`: Your Google Cloud Project ID
    - `GCP_BUCKET_NAME`: The name of your Google Cloud Storage bucket
-
-2. From auth0.properties:
-   - `AUTH0_CLIENT_ID`: Your Auth0 client ID
-   - `AUTH0_CLIENT_SECRET`: Your Auth0 client secret
-   - `AUTH0_DOMAIN`: Your Auth0 domain (e.g., your-domain.auth0.com)
 
 ### Accessing Secrets in Your Application
 
