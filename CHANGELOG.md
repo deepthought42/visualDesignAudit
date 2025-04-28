@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.0...v1.0.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* added changelog ([4fa1b62](https://github.com/deepthought42/visualDesignAudit/commit/4fa1b6291de9c7e14fac72a5a3ed7644b1f92094))
+
 # 1.0.0 (2025-03-27)
 
 
