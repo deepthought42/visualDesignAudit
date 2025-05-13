@@ -37,5 +37,5 @@ jobs:
         
       - name: Build Docker image
         run: |
-          docker build -t deepthought42/page-builder:${{ env.BRANCH_NAME }} .
-          docker tag deepthought42/page-builder:${{ env.BRANCH_NAME }} deepthought42/page-builder:latest
+          docker build -t deepthought42/visual-design-audit:${{ env.BRANCH_NAME }} .
+          docker tag deepthought42/visual-design-audit:${{ env.BRANCH_NAME }} deepthought42/visual-design-audit:latest
