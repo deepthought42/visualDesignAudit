@@ -61,7 +61,7 @@ public class AuditController {
 
 	@Autowired
 	private AuditRecordService audit_record_service;
-	
+
 	@Autowired
 	private DomainService domain_service;
 	
