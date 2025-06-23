@@ -275,17 +275,28 @@
 				    <groupId>org.seleniumhq.selenium</groupId>
 				    <artifactId>selenium-java</artifactId>
 				</exclusion>
-	     	</exclusions>
+			</exclusions>
 		</dependency>
 		
-
+		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>2.2.31</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.2.31</version>
+		</dependency>
 		
-	  </dependencies>
-	  
-	  <build>
-	    <plugins>
+	</dependencies>
+
+	<build>
+		<plugins>
 			<!-- Download LookseeCore JAR before build -->
-	      	<plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.1.0</version>
