@@ -15,14 +15,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.PageStateService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.ElementState;
+import com.looksee.models.ElementStateIssueMessage;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.AuditService;
+import com.looksee.services.PageStateService;
+import com.looksee.services.UXIssueMessageService;
 
 
 /**
@@ -52,9 +60,9 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 	 * {@inheritDoc}
 	 * 
 	 * Scores images on a page based on if the image has an "alt" value present, format is valid and the 
-	 *   url goes to a location that doesn't produce a 4xx error 
-	 * @throws MalformedURLException 
-	 * @throws URISyntaxException 
+	 *   url goes to a location that doesn't produce a 4xx error
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
 	 */
 	@Override
 	public Audit execute(PageState page_state, AuditRecord audit_record, DesignSystem design_system) { 
@@ -89,22 +97,23 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 			Element element = jsoup_doc.getElementsByTag(tag_name).first();
 			
 			//Check if element has "alt" attribute present
-			if(element.hasAttr("alt")) {				
+			if(element.hasAttr("alt")) {
 
 				if(element.attr("alt").isEmpty()) {
 					String title = "Image alternative text value is empty";
 					String description = "Image alternative text value is empty";
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.HIGH, 
-																	description, 
-																	"Images without alternative text defined as a non empty string value", 
+																	Priority.HIGH,
+																	description,
+																	"Images without alternative text defined as a non empty string value",
+																	image_element,
 																	AuditCategory.CONTENT,
 																	labels,
-																	ada_compliance,
+																	"",
 																	title,
 																	0,
-																	1, null);
+																	1);
 					
 					issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), image_element.getId());
@@ -115,15 +124,16 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 					String description = "Well done! By providing an alternative text value, you are providing a more inclusive experience";
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.NONE, 
-																	description, 
-																	"Images without alternative text defined as a non empty string value", 
+																	Priority.NONE,
+																	description,
+																	"Images without alternative text defined as a non empty string value",
+																	image_element,
 																	AuditCategory.CONTENT,
 																	labels,
-																	ada_compliance,
+																	"",
 																	title,
 																	1,
-																	1, null);
+																	1);
 
 					issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), image_element.getId());
@@ -135,15 +145,16 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 				String description = "Images without alternative text attribute";
 				
 				ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																Priority.HIGH, 
-																description, 
-																"Images without alternative text attribute", 
+																Priority.HIGH,
+																description,
+																"Images without alternative text attribute",
+																image_element,
 																AuditCategory.CONTENT,
-																labels, 
-																ada_compliance,
+																labels,
+																"",
 																title,
 																0,
-																1, null);
+																1);
 				
 				issue_message = (ElementStateIssueMessage) issue_message_service.save(issue_message);
 				issue_message_service.addElement(issue_message.getId(), image_element.getId());
@@ -177,15 +188,16 @@ public class ImageAltTextAudit implements IExecutablePageStateAudit {
 		String description = "Images without alternative text defined as a non empty string value";
 
 		Audit audit = new Audit(AuditCategory.CONTENT,
-								 AuditSubcategory.IMAGERY,
-								 AuditName.ALT_TEXT,
-								 points_earned,
-								 AuditLevel.PAGE,
-								 max_points,
-								 page_state.getUrl(),
-								 why_it_matters, 
-								 description, 
-								 true);
+								AuditSubcategory.IMAGERY,
+								AuditName.ALT_TEXT,
+								points_earned,
+								issue_messages,
+								AuditLevel.PAGE,
+								max_points,
+								page_state.getUrl(),
+								why_it_matters,
+								description,
+								true);
 		audit_service.save(audit);
 		audit_service.addAllIssues(audit.getId(), issue_messages);
 		

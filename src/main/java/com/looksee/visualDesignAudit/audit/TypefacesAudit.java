@@ -16,25 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Component;
 
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.Browser;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.Element;
+import com.looksee.models.ElementState;
+import com.looksee.models.ElementStateIssueMessage;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.TypefacesIssue;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.PageStateService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.BrowserUtils;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.Browser;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.Element;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.ElementStateIssueMessage;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.TypefacesIssue;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.PageStateService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
 /**
@@ -237,15 +237,16 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 				String title = "Text rendered with a primary typeface";
 
 				ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.MEDIUM, 
-																	description, 
-																	recommendation, 
+																	Priority.MEDIUM,
+																	description,
+																	recommendation,
+																	element,
 																	AuditCategory.AESTHETICS,
 																	labels,
 																	ada_compliance,
 																	title,
 																	1,
-																	1, null);
+																	1);
 				no_fallback_font.add(issue_message);
 			}
 			else {
@@ -254,15 +255,16 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 				String title = "Text rendered with a fallback typeface";
 
 				ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.MEDIUM, 
-																	description, 
-																	recommendation, 
-																	AuditCategory.AESTHETICS,
-																	labels,
-																	ada_compliance,
-																	title,
-																	0,
-																	1, null);
+																Priority.MEDIUM,
+																description,
+																recommendation,
+																element,
+																AuditCategory.AESTHETICS,
+																labels,
+																ada_compliance,
+																title,
+																0,
+																1);
 				no_fallback_font.add(issue_message);
 			}
 			
@@ -280,6 +282,7 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 						 AuditSubcategory.TYPOGRAPHY,
 						 AuditName.TYPEFACES,
 						 score,
+						 issue_messages,
 						 AuditLevel.PAGE,
 						 total_possible_points,
 						 page_state.getUrl(),

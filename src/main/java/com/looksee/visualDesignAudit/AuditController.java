@@ -35,24 +35,29 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.looksee.gcp.PubSubAuditUpdatePublisherImpl;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.Domain;
+import com.looksee.models.ElementState;
+import com.looksee.models.PageState;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.message.AuditProgressUpdate;
+import com.looksee.models.message.PageAuditMessage;
+import com.looksee.services.AuditRecordService;
+import com.looksee.services.DomainService;
+import com.looksee.services.PageStateService;
 import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
-import com.looksee.visualDesignAudit.gcp.PubSubAuditUpdatePublisherImpl;
 import com.looksee.visualDesignAudit.mapper.Body;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.Domain;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.message.AuditProgressUpdate;
-import com.looksee.visualDesignAudit.models.message.PageAuditMessage;
-import com.looksee.visualDesignAudit.services.AuditRecordService;
-import com.looksee.visualDesignAudit.services.DomainService;
-import com.looksee.visualDesignAudit.services.PageStateService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 // PubsubController consumes a Pub/Sub message.
 @RestController
@@ -61,7 +66,7 @@ public class AuditController {
 
 	@Autowired
 	private AuditRecordService audit_record_service;
-	
+
 	@Autowired
 	private DomainService domain_service;
 	
@@ -77,9 +82,57 @@ public class AuditController {
 	@Autowired
 	private PubSubAuditUpdatePublisherImpl audit_update_topic;
 	
+	/**
+	 * Receives a {@linkplain PageAuditMessage} from Pub/Sub and executes the visual design audit
+	 * 
+	 * @param body {@linkplain Body} containing the {@linkplain PageAuditMessage}
+	 * @return {@linkplain ResponseEntity} containing the result of the audit
+	 * @throws JsonMappingException if the JSON mapping fails
+	 * @throws JsonProcessingException if the JSON processing fails
+	 * @throws ExecutionException if the execution fails
+	 * @throws InterruptedException if the thread is interrupted
+	 */
+	@Operation(
+		summary = "Execute visual design audit",
+		description = "Receives a PageAuditMessage from Pub/Sub and executes the visual design audit including text and non-text color contrast analysis",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Successfully completed visual design audit",
+				content = @Content(
+					mediaType = "text/plain",
+					schema = @Schema(example = "Successfully completed visual design audit")
+				)
+			),
+			@ApiResponse(
+				responseCode = "400",
+				description = "Bad request - invalid message format or data",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(description = "Error response object")
+				)
+			),
+			@ApiResponse(
+				responseCode = "500",
+				description = "Internal server error during audit execution",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(description = "Error response object")
+				)
+			)
+		},
+		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+			description = "Pub/Sub message containing PageAuditMessage",
+			required = true,
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(description = "Pub/Sub message wrapper")
+			)
+		)
+	)
 	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public ResponseEntity<String> receiveMessage(@RequestBody Body body) 
-			throws JsonMappingException, JsonProcessingException, ExecutionException, InterruptedException 
+	public ResponseEntity<String> receiveMessage(@RequestBody Body body)
+			throws JsonMappingException, JsonProcessingException, ExecutionException, InterruptedException
 	{
 		Body.Message message = body.getMessage();
 		String data = message.getData();
@@ -128,6 +181,11 @@ public class AuditController {
 		return new ResponseEntity<String>("Successfully completed visual design audit", HttpStatus.OK);
 	}
 	
+	/**
+	 * Builds a default {@linkplain DesignSystem}
+	 * 
+	 * @return
+	 */
 	private DesignSystem buildDefaultDesignSystem() {
 		return new DesignSystem();
 	}

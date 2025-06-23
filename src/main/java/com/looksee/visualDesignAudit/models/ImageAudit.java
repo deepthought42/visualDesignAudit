@@ -11,13 +11,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.ImageElementState;
+import com.looksee.models.PageState;
+import com.looksee.models.Score;
+import com.looksee.models.StockImageIssueMessage;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.AuditService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.BrowserUtils;
 
 /**
@@ -53,22 +62,23 @@ public class ImageAudit implements IExecutablePageStateAudit {
 		//get all elements that are text containers
 		//List<ElementState> elements = page_state_service.getElementStates(page_state.getKey());
 		//filter elements that aren't text elements
-		List<ElementState> element_list = BrowserUtils.getImageElements(page_state.getElements());
+		List<ImageElementState> element_list = BrowserUtils.getImageElements(page_state.getElements());
 		
 		Score copyright_score = calculateCopyrightScore(element_list);
 		String why_it_matters = "";
 		String description = "";
 
 		Audit audit = new Audit(AuditCategory.CONTENT,
-								 AuditSubcategory.IMAGERY, 
-								 AuditName.IMAGE_COPYRIGHT, 
-								 copyright_score.getPointsAchieved(), 
-								 AuditLevel.PAGE, 
-								 copyright_score.getMaxPossiblePoints(), 
-								 page_state.getUrl(), 
+								 AuditSubcategory.IMAGERY,
+								 AuditName.IMAGE_COPYRIGHT,
+								 copyright_score.getPointsAchieved(),
+								 copyright_score.getIssueMessages(),
+								 AuditLevel.PAGE,
+								 copyright_score.getMaxPossiblePoints(),
+								 page_state.getUrl(),
 								 why_it_matters,
-								 description, 
-								 false); 
+								 description,
+								 false);
 						 
 		audit_service.save(audit);
 		audit_service.addAllIssues(audit.getId(), copyright_score.getIssueMessages());
@@ -84,7 +94,7 @@ public class ImageAudit implements IExecutablePageStateAudit {
 	 * @param element
 	 * @return
 	 */
-	public Score calculateCopyrightScore(List<ElementState> elements) {
+	public Score calculateCopyrightScore(List<ImageElementState> elements) {
 		int points_earned = 0;
 		int max_points = 0;
 		Set<UXIssueMessage> issue_messages = new HashSet<>();
@@ -94,7 +104,7 @@ public class ImageAudit implements IExecutablePageStateAudit {
 		
 		String ada_compliance = "There are no ADA compliance requirements for this category";
 		
-		for(ElementState element: elements) {
+		for(ImageElementState element: elements) {
 			if(element.isImageFlagged()) {
 				log.warn("Creating UX issue for image was for copyright");
 	
@@ -104,9 +114,10 @@ public class ImageAudit implements IExecutablePageStateAudit {
 				String description = "Image was found on another website";
 				
 				StockImageIssueMessage issue_message = new StockImageIssueMessage(
-																Priority.MEDIUM, 
-																description, 
-																recommendation, 
+																Priority.MEDIUM,
+																description,
+																recommendation,
+																element,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,
@@ -130,9 +141,10 @@ public class ImageAudit implements IExecutablePageStateAudit {
 				String description = "This image is unique to your site. Well done!";
 				
 				StockImageIssueMessage issue_message = new StockImageIssueMessage(
-																Priority.NONE, 
-																description, 
-																recommendation, 
+																Priority.NONE,
+																description,
+																recommendation,
+																element,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,
@@ -146,6 +158,6 @@ public class ImageAudit implements IExecutablePageStateAudit {
 				issue_messages.add(issue_message);
 			}
 		}
-		return new Score(points_earned, max_points, issue_messages);					
+		return new Score(points_earned, max_points, issue_messages);
 	}
 }

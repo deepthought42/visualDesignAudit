@@ -9,27 +9,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.ColorContrastIssueMessage;
+import com.looksee.models.ColorData;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.ElementState;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.models.enums.WCAGComplianceLevel;
+import com.looksee.models.recommend.ColorContrastRecommendation;
+import com.looksee.models.recommend.Recommendation;
+import com.looksee.services.AuditService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.BrowserUtils;
 import com.looksee.utils.ColorUtils;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.ColorContrastIssueMessage;
-import com.looksee.visualDesignAudit.models.ColorData;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.models.enums.WCAGComplianceLevel;
-import com.looksee.visualDesignAudit.models.recommend.ColorContrastRecommendation;
-import com.looksee.visualDesignAudit.models.recommend.Recommendation;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
 /**
@@ -114,9 +114,9 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 					String description = "Headline text has low contrast against the background";
 					String recommendation = "Increase the contrast by either making the text darker or the background lighter";
 					
-					Set<Recommendation> recommendations = generateTextContrastRecommendations(font_color, 
-																							background_color, 
-																							font_size, 
+					Set<Recommendation> recommendations = generateTextContrastRecommendations(font_color,
+																							background_color,
+																							font_size,
 																							!BrowserUtils.isTextBold(font_weight));
 	
 					ColorContrastIssueMessage low_header_contrast_observation = new ColorContrastIssueMessage(
@@ -125,13 +125,14 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																							element.getTextContrast(),
 																							font_color.rgb(),
 																							background_color.rgb(),
-																							AuditCategory.AESTHETICS, 
+																							element,
+																							AuditCategory.AESTHETICS,
 																							labels,
 																							ada_compliance,
-																							title, 
+																							title,
 																							font_size+"",
-																							0, 
-																							2, 
+																							0,
+																							2,
 																							recommendation);
 
 					//check if element already has this issue associated
@@ -164,12 +165,13 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																								element.getTextContrast(),
 																								font_color.rgb(),
 																								background_color.rgb(),
-																								AuditCategory.AESTHETICS, 
+																								element,
+																								AuditCategory.AESTHETICS,
 																								labels,
 																								ada_compliance,
-																								title, 
+																								title,
 																								font_size+"",
-																								1, 
+																								1,
 																								2,
 																								recommendation);
 						
@@ -200,12 +202,13 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																								element.getTextContrast(),
 																								font_color.rgb(),
 																								background_color.rgb(),
-																								AuditCategory.AESTHETICS, 
+																								element,
+																								AuditCategory.AESTHETICS,
 																								labels,
 																								ada_compliance,
-																								title, 
+																								title,
 																								font_size+"",
-																								2, 
+																								2,
 																								2,
 																								"");
 						
@@ -238,12 +241,13 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																								element.getTextContrast(),
 																								font_color.rgb(),
 																								background_color.rgb(),
-																								AuditCategory.AESTHETICS, 
+																								element,
+																								AuditCategory.AESTHETICS,
 																								labels,
 																								ada_compliance,
-																								title, 
+																								title,
 																								font_size+"",
-																								2, 
+																								2,
 																								2,
 																								"");
 						
@@ -277,10 +281,11 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																				element.getTextContrast(),
 																				font_color.rgb(),
 																				background_color.rgb(),
-																				AuditCategory.AESTHETICS, 
+																				element,
+																				AuditCategory.AESTHETICS,
 																				labels,
-																				ada_compliance, 
-																				title, 
+																				ada_compliance,
+																				title,
 																				font_size+"",
 																				0,
 																				2,
@@ -314,10 +319,11 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																					element.getTextContrast(),
 																					font_color.rgb(),
 																					background_color.rgb(),
-																					AuditCategory.AESTHETICS, 
+																					element,
+																					AuditCategory.AESTHETICS,
 																					labels,
-																					ada_compliance, 
-																					title, 
+																					ada_compliance,
+																					title,
 																					font_size+"",
 																					1,
 																					2,
@@ -346,10 +352,11 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																					element.getTextContrast(),
 																					font_color.rgb(),
 																					background_color.rgb(),
-																					AuditCategory.AESTHETICS, 
+																					element,
+																					AuditCategory.AESTHETICS,
 																					labels,
-																					ada_compliance, 
-																					title, 
+																					ada_compliance,
+																					title,
 																					font_size+"",
 																					2,
 																					2,
@@ -380,10 +387,11 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 																					element.getTextContrast(),
 																					font_color.rgb(),
 																					background_color.rgb(),
-																					AuditCategory.AESTHETICS, 
+																					element,
+																					AuditCategory.AESTHETICS,
 																					labels,
-																					ada_compliance, 
-																					title, 
+																					ada_compliance,
+																					title,
 																					font_size+"",
 																					2,
 																					2,
@@ -417,7 +425,8 @@ public class TextColorContrastAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 							     AuditName.TEXT_BACKGROUND_CONTRAST,
 							     points_earned,
-							     AuditLevel.PAGE, 
+								 issue_messages,
+							     AuditLevel.PAGE,
 							     max_points,
 							     page_state.getUrl(),
 							     why_it_matters,

@@ -15,27 +15,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.looksee.gcp.GoogleCloudStorage;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.ColorContrastIssueMessage;
+import com.looksee.models.ColorData;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.ElementState;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.models.enums.WCAGComplianceLevel;
+import com.looksee.models.recommend.ColorContrastRecommendation;
+import com.looksee.models.recommend.Recommendation;
+import com.looksee.services.AuditService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.ColorUtils;
-import com.looksee.visualDesignAudit.gcp.GoogleCloudStorage;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.ColorContrastIssueMessage;
-import com.looksee.visualDesignAudit.models.ColorData;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.models.enums.WCAGComplianceLevel;
-import com.looksee.visualDesignAudit.models.recommend.ColorContrastRecommendation;
-import com.looksee.visualDesignAudit.models.recommend.Recommendation;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
 /**
@@ -51,6 +51,9 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 	
 	@Autowired
 	private UXIssueMessageService issue_message_service;
+	
+	@Autowired
+	private GoogleCloudStorage google_cloud_storage;
 	
 	/**
 	 * {@inheritDoc}
@@ -112,7 +115,7 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 	}
 	
 	public Color getPixelColor(String image_url, int x, int y) throws IOException {
-		BufferedImage image = GoogleCloudStorage.getImage(image_url);
+		BufferedImage image = google_cloud_storage.getImage(image_url);
 		return new Color(image.getRGB(x, y));
 	}
 
@@ -200,8 +203,8 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 				String ada_compliance = "Non-text items should have a minimum contrast ratio of 3:1.";
 				
 				String recommendation = "use a darker/lighter shade of "+ element.getBackgroundColor() +" to achieve a contrast of 3:1";
-				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
-																							 parent_bkg);
+				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element,
+																							parent_bkg);
 				
 				ColorContrastIssueMessage low_contrast_issue = new ColorContrastIssueMessage(
 																			Priority.HIGH,
@@ -209,13 +212,14 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																			highest_contrast,
 																			element_bkg.rgb(),
 																			parent_bkg.rgb(),
+																			element,
 																			AuditCategory.AESTHETICS,
 																			labels,
 																			ada_compliance,
 																			title,
 																			null,
-																			0, 
-																			1, 
+																			0,
+																			1,
 																			recommendation);
 				
 				low_contrast_issue = issue_message_service.saveColorContrast(low_contrast_issue);
@@ -230,8 +234,8 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 				String ada_compliance = "Element is compliant with WCAG 2.1 " + design_system.getWcagComplianceLevel() + " standards.";
 				
 				String recommendation = "";
-				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element, 
-																							 parent_bkg);
+				Set<Recommendation> recommendations = generateNonTextContrastRecommendations(element,
+																							parent_bkg);
 				
 				ColorContrastIssueMessage accessible_contrast = new ColorContrastIssueMessage(
 																			Priority.NONE,
@@ -239,13 +243,14 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 																			highest_contrast,
 																			element_bkg.rgb(),
 																			parent_bkg.rgb(),
+																			element,
 																			AuditCategory.AESTHETICS,
 																			labels,
 																			ada_compliance,
 																			title,
 																			null,
-																			1, 
-																			1, 
+																			1,
+																			1,
 																			recommendation);
 				
 				accessible_contrast = issue_message_service.saveColorContrast(accessible_contrast);
@@ -281,11 +286,12 @@ public class NonTextColorContrastAudit implements IExecutablePageStateAudit {
 			*/
 		}
 		
-		String description = "Color contrast of text";		
+		String description = "Color contrast of text";
 		Audit audit = new Audit(AuditCategory.AESTHETICS,
 								 AuditSubcategory.COLOR_MANAGEMENT,
 								 AuditName.NON_TEXT_BACKGROUND_CONTRAST,
 								 points_earned,
+								 issue_messages,
 								 AuditLevel.PAGE,
 								 max_points,
 								 page_state.getUrl(),

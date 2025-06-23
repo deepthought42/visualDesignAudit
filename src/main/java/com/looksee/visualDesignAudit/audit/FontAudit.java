@@ -15,22 +15,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Component;
 
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.Element;
+import com.looksee.models.ElementState;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.ObservationType;
+import com.looksee.models.enums.Priority;
+import com.looksee.models.recommend.Recommendation;
 import com.looksee.utils.ElementStateUtils;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.Element;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.ObservationType;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.models.recommend.Recommendation;
 
 
 /**
@@ -285,11 +285,12 @@ public class FontAudit implements IExecutablePageStateAudit {
 						 AuditSubcategory.TYPOGRAPHY,
 						 AuditName.FONT,
 						 (font_size_score + score),
+						 issue_messages,
 						 AuditLevel.PAGE,
 						 (total_score + max_score),
 						 page_state.getUrl(),
-						 why_it_matters, 
-						 description, 
+						 why_it_matters,
+						 description,
 						 false);
 	}
 	
