@@ -12,15 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.cloud.language.v1.Sentence;
-import com.looksee.visualDesignAudit.gcp.CloudNLPUtils;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.PageStateService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
+import com.looksee.gcp.CloudNLPUtils;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.ElementState;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.Score;
+import com.looksee.models.SentenceIssueMessage;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.AuditService;
+import com.looksee.services.PageStateService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.BrowserUtils;
 
 /**
@@ -121,15 +130,16 @@ public class ParagraphingAudit implements IExecutablePageStateAudit {
 		String description = "";
 
 		Audit audit = new Audit(AuditCategory.CONTENT,
-						 AuditSubcategory.WRITTEN_CONTENT, 
-						 AuditName.PARAGRAPHING, 
-						 points_earned, 
-						 AuditLevel.PAGE, 
+						 AuditSubcategory.WRITTEN_CONTENT,
+						 AuditName.PARAGRAPHING,
+						 points_earned,
+						 issue_messages,
+						 AuditLevel.PAGE,
 						 max_points,
-						 page_state.getUrl(), 
+						 page_state.getUrl(),
 						 why_it_matters,
 						 description,
-						 false); 
+						 false);
 						 
 		audit_service.save(audit);
 		audit_service.addAllIssues(audit.getId(), issue_messages);
@@ -167,9 +177,10 @@ public class ParagraphingAudit implements IExecutablePageStateAudit {
 				String description = "The sentence  \"" + sentence.getText().getContent() + "\" has more than 25 words which can make it difficult for users to understand";
 
 				SentenceIssueMessage issue_message = new SentenceIssueMessage(
-																Priority.MEDIUM, 
-																description, 
-																recommendation, 
+																Priority.MEDIUM,
+																description,
+																recommendation,
+																element,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,
@@ -193,9 +204,10 @@ public class ParagraphingAudit implements IExecutablePageStateAudit {
 				String description = "The sentence  \"" + sentence.getText().getContent() + "\" has less than 25 words which is the standard for governmental documentation in the European Union(EU) and the United States(US)";
 				
 				SentenceIssueMessage issue_message = new SentenceIssueMessage(
-																Priority.NONE, 
-																description, 
-																recommendation, 
+																Priority.NONE,
+																description,
+																recommendation,
+																element,
 																AuditCategory.CONTENT,
 																labels,
 																ada_compliance,
@@ -209,7 +221,7 @@ public class ParagraphingAudit implements IExecutablePageStateAudit {
 				issue_messages.add(issue_message);
 			}
 		}
-		return new Score(points_earned, max_points, issue_messages);					
+		return new Score(points_earned, max_points, issue_messages);
 	}
 
 

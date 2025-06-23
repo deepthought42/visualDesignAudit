@@ -24,22 +24,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.Element;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.ElementStateIssueMessage;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.Score;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.PageStateService;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.Element;
+import com.looksee.models.ElementState;
+import com.looksee.models.ElementStateIssueMessage;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.Score;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.PageStateService;
 
 
 /**
@@ -130,19 +130,18 @@ public class MarginAudit implements IExecutablePageStateAudit {
 
 		int points = spacing_score.getPointsAchieved() + margin_as_padding_score.getPointsAchieved();
 		int max_points = spacing_score.getMaxPossiblePoints() + margin_as_padding_score.getMaxPossiblePoints();
-		//calculate score for question "Is margin used as margin?" NOTE: The expected calculation expects that margins are not used as margin
-		//log.warn("MARGIN SCORE  :::   " + points + " / 100" );	
 
 		return new Audit(AuditCategory.AESTHETICS,
-						 AuditSubcategory.WHITESPACE,
-						 AuditName.MARGIN,
-						 points,
-						 AuditLevel.PAGE,
-						 max_points,
-						 page_state.getUrl(),
-						 "",
-						 "",
-						 false);
+						AuditSubcategory.WHITESPACE,
+						AuditName.MARGIN,
+						points,
+						issue_messages,
+						AuditLevel.PAGE,
+						max_points,
+						page_state.getUrl(),
+						"",
+						"",
+						false);
 	}
 
 
@@ -174,13 +173,14 @@ public class MarginAudit implements IExecutablePageStateAudit {
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																		Priority.MEDIUM,
 																		description,
-																		"For best responsiveness make sure margin values are a multiple of 8.", 
-																		AuditCategory.AESTHETICS, 
-																		labels, 
-																		"", 
+																		"For best responsiveness make sure margin values are a multiple of 8.",
+																		element,
+																		AuditCategory.AESTHETICS,
+																		labels,
+																		"",
 																		title,
-																		1, 
-																		1, null);
+																		1,
+																		1);
 					issue_messages.add(issue_message);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -193,13 +193,14 @@ public class MarginAudit implements IExecutablePageStateAudit {
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																		Priority.MEDIUM,
 																		description,
-																		"For best responsiveness make sure margin values are a multiple of 8.", 
-																		AuditCategory.AESTHETICS, 
-																		labels, 
-																		"", 
+																		"For best responsiveness make sure margin values are a multiple of 8.",
+																		element,
+																		AuditCategory.AESTHETICS,
+																		labels,
+																		"",
 																		title,
-																		0, 
-																		1, null);
+																		0,
+																		1);
 					issue_messages.add(issue_message);
 				}
 				max_points++;
@@ -253,15 +254,16 @@ public class MarginAudit implements IExecutablePageStateAudit {
 					String title = "Has at least one margin value that isn't a multiple of 8.";
 					String description = title;
 					ElementStateIssueMessage element_issue = new ElementStateIssueMessage(
-							Priority.MEDIUM, 
-							description, 
-							"For best responsiveness make sure margin values are a multiple of 8.", 
-							AuditCategory.AESTHETICS, 
-							labels, 
-							"", 
+							Priority.MEDIUM,
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
+							AuditCategory.AESTHETICS,
+							labels,
+							"",
 							title,
 							1,
-							1, null);
+							1);
 					element_issues.add(element_issue);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -269,15 +271,16 @@ public class MarginAudit implements IExecutablePageStateAudit {
 					String title = "Has at least one margin value that isn't a multiple of 8.";
 					String description = title;
 					ElementStateIssueMessage element_issue = new ElementStateIssueMessage(
-							Priority.MEDIUM, 
-							description, 
-							"For best responsiveness make sure margin values are a multiple of 8.", 
-							AuditCategory.AESTHETICS, 
-							new HashSet<>(), 
-							null, 
+							Priority.MEDIUM,
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
+							AuditCategory.AESTHETICS,
+							labels,
+							"",
 							title,
 							0,
-							1, null);
+							1);
 					element_issues.add(element_issue);
 				}
 				max_points++;
@@ -356,14 +359,15 @@ public class MarginAudit implements IExecutablePageStateAudit {
 
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																	Priority.MEDIUM,
-																	description, 
-																	"Elements with unscalable margin units", 
-																	AuditCategory.AESTHETICS, 
+																	description,
+																	"Elements with unscalable margin units",
+																	element,
+																	AuditCategory.AESTHETICS,
 																	labels,
-																	"", 
-																	title, 
+																	"",
+																	title,
 																	0,
-																	1, null);
+																	1);
 					element_issues.add(issue_message);
 				}
 				else {
@@ -372,14 +376,15 @@ public class MarginAudit implements IExecutablePageStateAudit {
 
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																	Priority.MEDIUM,
-																	description, 
-																	"Elements with unscalable margin units", 
-																	AuditCategory.AESTHETICS, 
+																	description,
+																	"Elements with unscalable margin units",
+																	element,
+																	AuditCategory.AESTHETICS,
 																	labels,
-																	"", 
-																	title, 
+																	"",
+																	title,
 																	1,
-																	1, null);
+																	1);
 					element_issues.add(issue_message);
 				}
 			}
@@ -496,14 +501,15 @@ public class MarginAudit implements IExecutablePageStateAudit {
 
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																	Priority.MEDIUM,
-																	description, 
-																	"Elements that appear to use margin as padding", 
-																	AuditCategory.AESTHETICS, 
+																	description,
+																	"Elements that appear to use margin as padding",
+																	element,
+																	AuditCategory.AESTHETICS,
 																	labels,
-																	"", 
+																	"",
 																	title,
 																	0,
-																	1, null);
+																	1);
 					element_issues.add(issue_message);
 				}
 				else {
@@ -513,14 +519,15 @@ public class MarginAudit implements IExecutablePageStateAudit {
 
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 																	Priority.MEDIUM,
-																	description, 
-																	"Elements that appear to use margin as padding", 
-																	AuditCategory.AESTHETICS, 
+																	description,
+																	"Elements that appear to use margin as padding",
+																	element,
+																	AuditCategory.AESTHETICS,
 																	labels,
-																	"", 
+																	"",
 																	title,
 																	1,
-																	1, null);
+																	1);
 					element_issues.add(issue_message);
 				}
 				max_score += 3;

@@ -16,22 +16,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.Element;
-import com.looksee.visualDesignAudit.models.ElementState;
-import com.looksee.visualDesignAudit.models.ElementStateIssueMessage;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.Score;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.PageStateService;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.Domain;
+import com.looksee.models.Element;
+import com.looksee.models.ElementState;
+import com.looksee.models.ElementStateIssueMessage;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.Score;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.PageStateService;
 
 
 
@@ -139,6 +140,7 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 						 AuditSubcategory.WHITESPACE,
 						 AuditName.PADDING,
 						 points,
+						 issue_messages,
 						 AuditLevel.PAGE,
 						 max_points,
 						 page.getUrl(),
@@ -309,16 +311,17 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 					String title = "All margins for element are multiple of 8.";
 					String description = "All margins for element are multiple of 8.";
 					
-					ElementStateIssueMessage issue_message = new ElementStateIssueMessage( 
-																	Priority.MEDIUM,
-																	description, 
-																	"For best responsiveness make sure margin values are a multiple of 8.", 
-																	AuditCategory.AESTHETICS,
-																	labels,
-																	ada_compliance, 
-																	title,
-																	1,
-																	1, null);
+					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
+							Priority.MEDIUM,
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
+							AuditCategory.AESTHETICS,
+							labels,
+							"",
+							title,
+							1,
+							1);
 					issue_messages.add(issue_message);
 				}
 				//else create observation that element is unlikely to scale gracefully
@@ -326,16 +329,17 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 					String title = "At least one margin value isn't a multiple of 8.";
 					String description = "At least one margin value isn't a multiple of 8.";
 
-					ElementStateIssueMessage issue_message = new ElementStateIssueMessage( 
-																	Priority.MEDIUM,
-																	description, 
-																	"For best responsiveness make sure margin values are a multiple of 8.", 
-																	AuditCategory.AESTHETICS,
-																	labels,
-																	ada_compliance, 
-																	title,
-																	0,
-																	1, null);
+					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
+							Priority.MEDIUM,
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
+							AuditCategory.AESTHETICS,
+							labels,
+							"",
+							title,
+							0,
+							1);
 					issue_messages.add(issue_message);
 				}
 				max_points++;
@@ -401,14 +405,15 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 							Priority.MEDIUM,
-							description, 
-							"For best responsiveness make sure margin values are a multiple of 8.", 
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
 							AuditCategory.AESTHETICS,
 							labels,
 							ada_compliance,
 							title,
 							0,
-							1, null);
+							1);
 					issue_messages.add(issue_message);
 				}
 				else {
@@ -417,14 +422,15 @@ public class PaddingAudit implements IExecutablePageStateAudit {
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
 							Priority.MEDIUM,
-							description, 
-							"For best responsiveness make sure margin values are a multiple of 8.", 
+							description,
+							"For best responsiveness make sure margin values are a multiple of 8.",
+							element,
 							AuditCategory.AESTHETICS,
 							labels,
-							ada_compliance,
+							"",
 							title,
-							0, 
-							1, null);
+							0,
+							1);
 					issue_messages.add(issue_message);
 				}
 			}

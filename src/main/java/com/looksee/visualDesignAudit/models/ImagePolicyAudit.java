@@ -11,14 +11,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.models.enums.Priority;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.PageStateService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.ElementState;
+import com.looksee.models.ElementStateIssueMessage;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.ImageElementState;
+import com.looksee.models.PageState;
+import com.looksee.models.ReadingComplexityIssueMessage;
+import com.looksee.models.Score;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.models.enums.Priority;
+import com.looksee.services.AuditService;
+import com.looksee.services.PageStateService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.BrowserUtils;
 
 /**
@@ -65,15 +76,16 @@ public class ImagePolicyAudit implements IExecutablePageStateAudit {
 		Score image_policy_score = calculateImagePolicyViolationScore(element_list, design_system);
 		
 		Audit audit = new Audit(AuditCategory.CONTENT,
-								 AuditSubcategory.IMAGERY, 
-								 AuditName.IMAGE_POLICY, 
-								 image_policy_score.getPointsAchieved(), 
-								 AuditLevel.PAGE, 
-								 image_policy_score.getMaxPossiblePoints(), 
-								 page_state.getUrl(), 
-								 why_it_matters,
-								 description, 
-								 false); 
+								AuditSubcategory.IMAGERY,
+								AuditName.IMAGE_POLICY,
+								image_policy_score.getPointsAchieved(),
+								image_policy_score.getIssueMessages(),
+								AuditLevel.PAGE,
+								image_policy_score.getMaxPossiblePoints(),
+								page_state.getUrl(),
+								why_it_matters,
+								description,
+								false);
 		
 		audit_service.save(audit);
 		audit_service.addAllIssues(audit.getId(), image_policy_score.getIssueMessages());
@@ -110,15 +122,16 @@ public class ImagePolicyAudit implements IExecutablePageStateAudit {
 					String description = "Image contains nudity and/or adult content";
 
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.MEDIUM, 
-																	description, 
-																	recommendation, 
+																	Priority.MEDIUM,
+																	description,
+																	recommendation,
+																	element,
 																	AuditCategory.CONTENT,
 																	labels,
 																	ada_compliance,
 																	title,
 																	0,
-																	1, null);
+																	1);
 					
 					issue_message = (ReadingComplexityIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), element.getId());
@@ -136,15 +149,16 @@ public class ImagePolicyAudit implements IExecutablePageStateAudit {
 					String description = "Image contains violence";
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.MEDIUM, 
-																	description, 
-																	recommendation, 
+																	Priority.MEDIUM,
+																	description,
+																	recommendation,
+																	element,
 																	AuditCategory.CONTENT,
 																	labels,
 																	ada_compliance,
 																	title,
 																	0,
-																	1, null);
+																	1);
 					
 					issue_message = (ReadingComplexityIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), element.getId());
@@ -161,15 +175,16 @@ public class ImagePolicyAudit implements IExecutablePageStateAudit {
 					String description = "This image complies with the domain policy. Well done!";
 					
 					ElementStateIssueMessage issue_message = new ElementStateIssueMessage(
-																	Priority.NONE, 
-																	description, 
-																	recommendation, 
+																	Priority.NONE,
+																	description,
+																	recommendation,
+																	element,
 																	AuditCategory.CONTENT,
 																	labels,
 																	ada_compliance,
 																	title,
 																	1,
-																	1, null);
+																	1);
 
 					issue_message = (ReadingComplexityIssueMessage) issue_message_service.save(issue_message);
 					issue_message_service.addElement(issue_message.getId(), element.getId());

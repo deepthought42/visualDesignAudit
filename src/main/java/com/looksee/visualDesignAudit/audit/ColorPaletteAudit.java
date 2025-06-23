@@ -12,21 +12,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.looksee.models.Audit;
+import com.looksee.models.AuditRecord;
+import com.looksee.models.ColorData;
+import com.looksee.models.DesignSystem;
+import com.looksee.models.IExecutablePageStateAudit;
+import com.looksee.models.PageState;
+import com.looksee.models.Score;
+import com.looksee.models.UXIssueMessage;
+import com.looksee.models.enums.AuditCategory;
+import com.looksee.models.enums.AuditLevel;
+import com.looksee.models.enums.AuditName;
+import com.looksee.models.enums.AuditSubcategory;
+import com.looksee.services.AuditService;
+import com.looksee.services.UXIssueMessageService;
 import com.looksee.utils.ColorPaletteUtils;
-import com.looksee.visualDesignAudit.models.Audit;
-import com.looksee.visualDesignAudit.models.AuditRecord;
-import com.looksee.visualDesignAudit.models.ColorData;
-import com.looksee.visualDesignAudit.models.DesignSystem;
-import com.looksee.visualDesignAudit.models.IExecutablePageStateAudit;
-import com.looksee.visualDesignAudit.models.PageState;
-import com.looksee.visualDesignAudit.models.Score;
-import com.looksee.visualDesignAudit.models.UXIssueMessage;
-import com.looksee.visualDesignAudit.models.enums.AuditCategory;
-import com.looksee.visualDesignAudit.models.enums.AuditLevel;
-import com.looksee.visualDesignAudit.models.enums.AuditName;
-import com.looksee.visualDesignAudit.models.enums.AuditSubcategory;
-import com.looksee.visualDesignAudit.services.AuditService;
-import com.looksee.visualDesignAudit.services.UXIssueMessageService;
 
 
 
@@ -110,7 +110,7 @@ public class ColorPaletteAudit implements IExecutablePageStateAudit {
 		Score score = ColorPaletteUtils.getPaletteScore(palette_colors, colors);
 		
 		Set<UXIssueMessage> issue_messages = new HashSet<>();
-		for( UXIssueMessage issue_msg : score.getIssueMessages()) {			
+		for( UXIssueMessage issue_msg : score.getIssueMessages()) {
 			issue_messages.add(ux_issue_service.save(issue_msg));
 		}
 		
@@ -123,11 +123,12 @@ public class ColorPaletteAudit implements IExecutablePageStateAudit {
 								 AuditSubcategory.COLOR_MANAGEMENT,
 								 AuditName.COLOR_PALETTE,
 								 score.getPointsAchieved(),
+								 issue_messages,
 								 AuditLevel.PAGE,
 								 score.getMaxPossiblePoints(),
 								 page_state.getUrl(),
 								 why_it_matters,
-								 audit_description, 
+								 audit_description,
 								 false);
 		
 		audit_service.save(audit);
