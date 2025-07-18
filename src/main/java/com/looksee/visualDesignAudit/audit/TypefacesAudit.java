@@ -1,7 +1,5 @@
 package com.looksee.visualDesignAudit.audit;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,20 +11,18 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Component;
 
-import com.looksee.models.Audit;
-import com.looksee.models.AuditRecord;
 import com.looksee.models.Browser;
-import com.looksee.models.DesignSystem;
-import com.looksee.models.Element;
 import com.looksee.models.ElementState;
-import com.looksee.models.ElementStateIssueMessage;
-import com.looksee.models.IExecutablePageStateAudit;
 import com.looksee.models.PageState;
-import com.looksee.models.TypefacesIssue;
-import com.looksee.models.UXIssueMessage;
+import com.looksee.models.audit.Audit;
+import com.looksee.models.audit.AuditRecord;
+import com.looksee.models.audit.ElementStateIssueMessage;
+import com.looksee.models.audit.IExecutablePageStateAudit;
+import com.looksee.models.audit.TypefacesIssue;
+import com.looksee.models.audit.UXIssueMessage;
+import com.looksee.models.designsystem.DesignSystem;
 import com.looksee.models.enums.AuditCategory;
 import com.looksee.models.enums.AuditLevel;
 import com.looksee.models.enums.AuditName;
@@ -45,9 +41,6 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(TypefacesAudit.class);
 	
-	@Relationship(type="FLAGGED")
-	private List<Element> flagged_elements = new ArrayList<>();
-	
 	@Autowired
 	private UXIssueMessageService issue_message_service;
 	
@@ -61,10 +54,7 @@ public class TypefacesAudit implements IExecutablePageStateAudit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Identifies colors used on page, the color scheme type used, and the ultimately the score for how the colors used conform to scheme
-	 *  
-	 * @throws MalformedURLException 
-	 * @throws URISyntaxException 
+	 * Identifies the typefaces used on the page and the score for how the typefaces used conform to scheme
 	 */
 	@Override
 	public Audit execute(PageState page_state, AuditRecord audit_record, DesignSystem design_system) {

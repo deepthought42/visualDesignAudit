@@ -1,7 +1,5 @@
 package com.looksee.visualDesignAudit.audit;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,24 +10,22 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Component;
 
-import com.looksee.models.Audit;
-import com.looksee.models.AuditRecord;
-import com.looksee.models.DesignSystem;
-import com.looksee.models.Element;
 import com.looksee.models.ElementState;
-import com.looksee.models.IExecutablePageStateAudit;
 import com.looksee.models.PageState;
-import com.looksee.models.UXIssueMessage;
+import com.looksee.models.audit.Audit;
+import com.looksee.models.audit.AuditRecord;
+import com.looksee.models.audit.IExecutablePageStateAudit;
+import com.looksee.models.audit.UXIssueMessage;
+import com.looksee.models.audit.recommend.Recommendation;
+import com.looksee.models.designsystem.DesignSystem;
 import com.looksee.models.enums.AuditCategory;
 import com.looksee.models.enums.AuditLevel;
 import com.looksee.models.enums.AuditName;
 import com.looksee.models.enums.AuditSubcategory;
 import com.looksee.models.enums.ObservationType;
 import com.looksee.models.enums.Priority;
-import com.looksee.models.recommend.Recommendation;
 import com.looksee.utils.ElementStateUtils;
 
 
@@ -41,9 +37,6 @@ public class FontAudit implements IExecutablePageStateAudit {
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(FontAudit.class);
 	
-	@Relationship(type="FLAGGED")
-	List<Element> flagged_elements = new ArrayList<>();
-	
 	public FontAudit() {
 		//super(buildBestPractices(), getAdaDescription(), getAuditDescription(), AuditSubcategory.TEXT_BACKGROUND_CONTRAST);
 	}
@@ -51,10 +44,7 @@ public class FontAudit implements IExecutablePageStateAudit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Identifies colors used on page, the color scheme type used, and the ultimately the score for how the colors used conform to scheme
-	 *  
-	 * @throws MalformedURLException 
-	 * @throws URISyntaxException 
+	 * Identifies font sizes and weights for headers and text elements on the page
 	 */
 	@Override
 	public Audit execute(PageState page_state, AuditRecord audit_record, DesignSystem design_system) {
