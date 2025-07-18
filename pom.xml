@@ -67,15 +67,7 @@
 	      <version>4.13.2</version>
 	      <scope>test</scope>
 	    </dependency>
-
-		<!-- https://mvnrepository.com/artifact/net.sf.cssbox/jstyleparser -->
-		<dependency>
-		    <groupId>net.sf.cssbox</groupId>
-		    <artifactId>jstyleparser</artifactId>
-		    <version>3.5</version>
-		</dependency>
 		
-				
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
