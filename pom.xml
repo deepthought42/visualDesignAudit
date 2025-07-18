@@ -47,9 +47,7 @@
 		<dependency>
             <groupId>com.looksee</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.6</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/libs/core-0.1.6.jar</systemPath>
+            <version>0.3.13</version>
         </dependency>
 
 		
@@ -295,20 +293,20 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.1.0</version>
 				<executions>
-				<execution>
-					<id>download-core-jar</id>
-					<phase>validate</phase>
-					<goals>
-						<goal>exec</goal>
-					</goals>
-					<configuration>
-						<executable>bash</executable>
-						<arguments>
-							<argument>scripts/download-core.sh</argument>
-						</arguments>
-						<workingDirectory>${project.basedir}</workingDirectory>
-					</configuration>
-				</execution>
+					<execution>
+						<id>download-core-jar</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<arguments>
+								<argument>scripts/download-core.sh</argument>
+							</arguments>
+							<workingDirectory>${project.basedir}</workingDirectory>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 

@@ -52,7 +52,7 @@ import com.looksee.services.DomainService;
 import com.looksee.services.PageStateService;
 import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
-import com.looksee.visualDesignAudit.mapper.Body;
+import com.looksee.mapper.Body;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

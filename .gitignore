@@ -5,11 +5,10 @@ gmail_credentials.json
 /target
 
 .classpath
-
 .project
-
 .settings/
 
 *.prod
-
 *.stage
+
+/libs
