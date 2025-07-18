@@ -5,11 +5,11 @@ gmail_credentials.json
 /target
 
 .classpath
-
 .project
-
 .settings/
+/.vscode
 
 *.prod
-
 *.stage
+
+/libs/
