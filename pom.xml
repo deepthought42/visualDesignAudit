@@ -13,24 +13,26 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
 	    <springboot.version>2.6.13</springboot.version>
+		<lombok.version>1.18.36</lombok.version>
+		<core.version>0.3.19</core.version>
     </properties>
 
     <dependencyManagement>
 		<dependencies>
 			<dependency>
-			<!-- Import dependency management from Spring Boot -->
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-dependencies</artifactId>
-			<version>${springboot.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${springboot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-dependencies</artifactId>
-			<version>2021.0.0</version>
-			<type>pom</type>
-			<scope>import</scope>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2021.0.0</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.google.cloud</groupId>
@@ -47,7 +49,7 @@
 		<dependency>
             <groupId>com.looksee</groupId>
             <artifactId>core</artifactId>
-            <version>0.3.15</version>
+            <version>${core.version}</version>
         </dependency>
 
 		<dependency>
@@ -75,6 +77,11 @@
 			<version>2.2.31</version>
 		</dependency>
 		
+		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -130,5 +137,5 @@
 				</executions>
 			</plugin>
 	    </plugins>
-  	</build>
+	</build>
 </project>
