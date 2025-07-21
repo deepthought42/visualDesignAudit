@@ -1,3 +1,20 @@
+## [1.0.4](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.3...v1.0.4) (2025-07-21)
+
+
+### Bug Fixes
+
+* added openapi annotations to api endpoint ([446e4f2](https://github.com/deepthought42/visualDesignAudit/commit/446e4f21cd07c66ad41b215022e77048fa10a752))
+* bump version to 0.3.20 ([eeb51fc](https://github.com/deepthought42/visualDesignAudit/commit/eeb51fc4fa202fed60ca2d80836391d04fe7d914))
+* controller cleanup ([1d6ef22](https://github.com/deepthought42/visualDesignAudit/commit/1d6ef22b0047086bc22a81494030e033bde2a10c))
+* core upgrade to 0.3.13 ([60386dd](https://github.com/deepthought42/visualDesignAudit/commit/60386dd301ab4ee6ffaef4e0022a52480489cc37))
+* jdk version in release bumped ([d926b43](https://github.com/deepthought42/visualDesignAudit/commit/d926b43f9fbc65829f69d0bebfd642aed4f555a2))
+* refactored core models, services, etc ([30398e9](https://github.com/deepthought42/visualDesignAudit/commit/30398e957c9241f72fc0bd6b2d42f2edf7f9ae0a))
+* script download and java version uprade in docker ([1fc9c34](https://github.com/deepthought42/visualDesignAudit/commit/1fc9c349625d633fbfe4114ec064acb74c7865cd))
+* updated ci pipelines to prevent release before merge to master ([902ece9](https://github.com/deepthought42/visualDesignAudit/commit/902ece90a409f3af6e9196eb3b954196fa8801da))
+* updated ci pipelines to prevent release before merge to master ([425f389](https://github.com/deepthought42/visualDesignAudit/commit/425f3892dc6987c16244257f9664029bbedde264))
+* updated jdk version to 21 ([9dbbeda](https://github.com/deepthought42/visualDesignAudit/commit/9dbbedaf51f3e0ecc367a8564eef2dd4ce2095fb))
+* upgrade core to 0.3.20 and bring image copyright and policy audits into visual auditor ([fb4c837](https://github.com/deepthought42/visualDesignAudit/commit/fb4c837f6c8b55ff4b79a3eda6840f7e7c738b0d))
+
 ## [1.0.3](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.2...v1.0.3) (2025-04-28)
 
 
