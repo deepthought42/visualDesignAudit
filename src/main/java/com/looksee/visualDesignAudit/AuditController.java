@@ -51,6 +51,8 @@ import com.looksee.models.message.PageAuditMessage;
 import com.looksee.services.AuditRecordService;
 import com.looksee.services.DomainService;
 import com.looksee.services.PageStateService;
+import com.looksee.visualDesignAudit.audit.ImageAudit;
+import com.looksee.visualDesignAudit.audit.ImagePolicyAudit;
 import com.looksee.visualDesignAudit.audit.NonTextColorContrastAudit;
 import com.looksee.visualDesignAudit.audit.TextColorContrastAudit;
 
@@ -78,6 +80,12 @@ public class AuditController {
 	
 	@Autowired
 	private NonTextColorContrastAudit non_text_contrast_audit_impl;
+	
+	@Autowired
+	private ImageAudit image_audit;
+
+	@Autowired
+	private ImagePolicyAudit image_policy_audit;
 	
 	@Autowired
 	private PubSubAuditUpdatePublisherImpl audit_update_topic;
@@ -168,6 +176,16 @@ public class AuditController {
 			audits.add(non_text_contrast_audit);
 		}
 
+		if(!auditAlreadyExists(audits, AuditName.IMAGE_COPYRIGHT)) {
+			Audit image_copyright_audit = image_audit.execute(page, audit_record, null);
+			audit_record_service.addAudit(audit_record_msg.getPageAuditId(), image_copyright_audit.getId());
+		}
+		
+		if(!auditAlreadyExists(audits, AuditName.IMAGE_POLICY)) {
+			Audit image_policy_result = image_policy_audit.execute(page, audit_record, null);
+			audit_record_service.addAudit(audit_record_msg.getPageAuditId(), image_policy_result.getId());
+		}
+		
 		AuditProgressUpdate audit_update = new AuditProgressUpdate(audit_record_msg.getAccountId(),
 																	1.0, 
 																	"Completed visual design audit!",
