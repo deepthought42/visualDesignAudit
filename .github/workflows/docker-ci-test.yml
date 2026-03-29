@@ -34,14 +34,14 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    env:
-      BRANCH_NAME: ${{ github.head_ref }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
+      - name: Sanitize branch name
+        run: echo "BRANCH_TAG=$(echo '${{ github.head_ref }}' | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
-          docker build -t deepthought42/visual-design-audit:${{ env.BRANCH_NAME }} .
-          docker tag deepthought42/visual-design-audit:${{ env.BRANCH_NAME }} deepthought42/visual-design-audit:latest
+          docker build -t deepthought42/visual-design-audit:${{ env.BRANCH_TAG }} .
+          docker tag deepthought42/visual-design-audit:${{ env.BRANCH_TAG }} deepthought42/visual-design-audit:latest
