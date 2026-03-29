@@ -1,3 +1,11 @@
+## [1.0.5](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.4...v1.0.5) (2026-03-29)
+
+
+### Bug Fixes
+
+* **ci:** sanitize branch name in Docker tag to handle slashes ([473c02b](https://github.com/deepthought42/visualDesignAudit/commit/473c02b03421a02daedd8bbc5640877b62965774))
+* resolve test compilation errors for Audit API compatibility ([eb641d7](https://github.com/deepthought42/visualDesignAudit/commit/eb641d7e794d0489720c61ba7467d5819bfe19ac))
+
 ## [1.0.4](https://github.com/deepthought42/visualDesignAudit/compare/v1.0.3...v1.0.4) (2025-07-21)
 
 
