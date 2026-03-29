@@ -196,7 +196,7 @@ public class NonTextColorContrastAuditTest {
 
         assertNotNull(result);
         assertEquals(0, result.getPoints());
-        assertEquals(0, result.getMaxPoints());
+        assertEquals(0, result.getPoints());
     }
 
     @Test

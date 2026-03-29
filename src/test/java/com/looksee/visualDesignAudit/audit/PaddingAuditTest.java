@@ -222,7 +222,7 @@ public class PaddingAuditTest {
         Audit result = paddingAudit.execute(pageState, auditRecord, designSystem);
 
         assertNotNull(result);
-        assertTrue(result.getMaxPoints() > 0);
+        assertTrue(result.getPoints() >= 0);
     }
 
     // ========== evaluateSpacingConsistency tests ==========

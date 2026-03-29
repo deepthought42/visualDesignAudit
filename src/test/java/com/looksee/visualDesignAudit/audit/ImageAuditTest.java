@@ -195,7 +195,7 @@ public class ImageAuditTest {
         assertEquals(AuditCategory.CONTENT, result.getCategory());
         assertEquals(AuditSubcategory.IMAGERY, result.getSubcategory());
         assertEquals(AuditName.IMAGE_COPYRIGHT, result.getName());
-        assertFalse(result.isWhyItMatters() == null);
+        assertNotNull(result.getWhyItMatters());
     }
 
     @Test

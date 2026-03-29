@@ -5,9 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,7 +103,7 @@ public class ImagePolicyAuditTest {
         when(imgElement.isViolentContent()).thenReturn(false);
         when(imgElement.getOwnedText()).thenReturn("");
 
-        Set<String> allowedChars = new HashSet<>();
+        List<String> allowedChars = new ArrayList<>();
         when(designSystem.getAllowedImageCharacteristics()).thenReturn(allowedChars);
 
         List<ElementState> elements = new ArrayList<>();
@@ -131,7 +129,7 @@ public class ImagePolicyAuditTest {
         when(imgElement.isAdultContent()).thenReturn(true);
         when(imgElement.getOwnedText()).thenReturn("");
 
-        Set<String> allowedChars = new HashSet<>();
+        List<String> allowedChars = new ArrayList<>();
         when(designSystem.getAllowedImageCharacteristics()).thenReturn(allowedChars);
 
         List<ElementState> elements = new ArrayList<>();
@@ -158,8 +156,7 @@ public class ImagePolicyAuditTest {
         when(imgElement.isViolentContent()).thenReturn(false);
         when(imgElement.getOwnedText()).thenReturn("");
 
-        Set<String> allowedChars = new HashSet<>();
-        allowedChars.add("ADULT");
+        List<String> allowedChars = new ArrayList<>(Arrays.asList("ADULT"));
         when(designSystem.getAllowedImageCharacteristics()).thenReturn(allowedChars);
 
         List<ElementState> elements = new ArrayList<>();
@@ -186,7 +183,7 @@ public class ImagePolicyAuditTest {
         when(imgElement.isViolentContent()).thenReturn(true);
         when(imgElement.getOwnedText()).thenReturn("");
 
-        Set<String> allowedChars = new HashSet<>();
+        List<String> allowedChars = new ArrayList<>();
         when(designSystem.getAllowedImageCharacteristics()).thenReturn(allowedChars);
 
         List<ElementState> elements = new ArrayList<>();
@@ -213,8 +210,7 @@ public class ImagePolicyAuditTest {
         when(imgElement.isViolentContent()).thenReturn(true);
         when(imgElement.getOwnedText()).thenReturn("");
 
-        Set<String> allowedChars = new HashSet<>();
-        allowedChars.add("VIOLENCE");
+        List<String> allowedChars = new ArrayList<>(Arrays.asList("VIOLENCE"));
         when(designSystem.getAllowedImageCharacteristics()).thenReturn(allowedChars);
 
         List<ElementState> elements = new ArrayList<>();
